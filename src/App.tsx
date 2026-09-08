@@ -10,8 +10,28 @@ import AdminDashboard from "./pages/AdminDashboard";
 import BlogList from "./pages/BlogList";
 import BlogPost from "./pages/BlogPost";
 import Team from "./pages/Team";
+import OpenSource from "./pages/OpenSource";
 
 const queryClient = new QueryClient();
+
+const isOpenSourceHost = window.location.hostname.toLowerCase() === "opensource.bzcreators.com.ar";
+
+const AppRoutes = () => isOpenSourceHost ? (
+  <Routes>
+    <Route path="*" element={<OpenSource />} />
+  </Routes>
+) : (
+  <Routes>
+    <Route path="/" element={<Index />} />
+    <Route path="/blog" element={<BlogList />} />
+    <Route path="/blog/:slug" element={<BlogPost />} />
+    <Route path="/equipo" element={<Team />} />
+    <Route path="/opensource" element={<OpenSource />} />
+    <Route path="/admin" element={<AdminLogin />} />
+    <Route path="/admin/dashboard" element={<AdminDashboard />} />
+    <Route path="*" element={<NotFound />} />
+  </Routes>
+);
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -19,16 +39,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/blog" element={<BlogList />} />
-          <Route path="/blog/:slug" element={<BlogPost />} />
-          <Route path="/equipo" element={<Team />} />
-          <Route path="/admin" element={<AdminLogin />} />
-          <Route path="/admin/dashboard" element={<AdminDashboard />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <AppRoutes />
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

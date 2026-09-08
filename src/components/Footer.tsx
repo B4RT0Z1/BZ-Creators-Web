@@ -9,9 +9,10 @@ const Footer = () => {
             <img src={bzLogo} alt="BZ Creators" className="h-12 w-auto object-contain" />
           </div>
           <div className="flex gap-6">
-            <a href="#servicios" className="text-sm text-muted-foreground hover:text-foreground">Servicios</a>
-            <a href="#productos" className="text-sm text-muted-foreground hover:text-foreground">Productos</a>
-            <a href="#contacto" className="text-sm text-muted-foreground hover:text-foreground">Contacto</a>
+            <a href="https://bzcreators.com.ar/#servicios" className="text-sm text-muted-foreground hover:text-foreground">Servicios</a>
+            <a href="https://bzcreators.com.ar/#productos" className="text-sm text-muted-foreground hover:text-foreground">Productos</a>
+            <a href="https://opensource.bzcreators.com.ar" className="text-sm text-muted-foreground hover:text-foreground">OpenSource</a>
+            <a href="https://bzcreators.com.ar/#contacto" className="text-sm text-muted-foreground hover:text-foreground">Contacto</a>
           </div>
           <p className="text-xs text-muted-foreground">
             © 2026 BZ Creators. Todos los derechos reservados.

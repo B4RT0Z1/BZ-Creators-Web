@@ -26,3 +26,15 @@ export const cleanArticleHtml = (value) => sanitizeHtml(String(value ?? ""), {
 });
 
 export const parsePublished = (value) => value === true || value === "true" || value === "1" || value === 1;
+
+export const cleanExternalUrl = (value, { required = false } = {}) => {
+  const candidate = cleanText(value, 2048);
+  if (!candidate && !required) return null;
+  try {
+    const url = new URL(candidate);
+    if (!['http:', 'https:'].includes(url.protocol)) return null;
+    return url.toString();
+  } catch {
+    return null;
+  }
+};

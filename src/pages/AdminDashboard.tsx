@@ -3,10 +3,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { useNavigate, Link } from "react-router-dom";
-import { LayoutDashboard, FileText, LogOut, Plus, Trash2, Edit, ExternalLink } from "lucide-react";
+import { Code2, LayoutDashboard, FileText, LogOut, Plus, Trash2, Edit, ExternalLink } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { ApiError, authApi, Post, postsApi } from "@/lib/api";
 import RichTextEditor from "@/components/RichTextEditor";
+import OpenSourceManager from "@/components/admin/OpenSourceManager";
 
 const chartData = [
   { name: 'Lun', vistas: 120 },
@@ -19,7 +20,7 @@ const chartData = [
 ];
 
 export default function AdminDashboard() {
-  const [view, setView] = useState<"dashboard" | "posts" | "editor">("dashboard");
+  const [view, setView] = useState<"dashboard" | "posts" | "editor" | "opensource">("dashboard");
   const [posts, setPosts] = useState<Post[]>([]);
   const [ready, setReady] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -151,6 +152,13 @@ export default function AdminDashboard() {
           >
             <FileText size={20} />
             <span>Posts</span>
+          </button>
+          <button
+            onClick={() => setView("opensource")}
+            className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors ${view === "opensource" ? "bg-slate-800 text-white" : "hover:bg-slate-800 hover:text-white"}`}
+          >
+            <Code2 size={20} />
+            <span>OpenSource</span>
           </button>
         </nav>
         <div className="p-4 border-t border-slate-800">
@@ -309,6 +317,8 @@ export default function AdminDashboard() {
               </div>
             </div>
           )}
+
+          {view === "opensource" && <OpenSourceManager />}
 
         </div>
       </div>

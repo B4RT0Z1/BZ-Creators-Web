@@ -5,10 +5,11 @@ import bzLogo from "@/assets/logo-png.png";
 import { getWhatsAppUrl } from "@/lib/constants";
 
 const navLinks = [
-  { label: "Inicio", href: "/#inicio" },
-  { label: "Servicios", href: "/#servicios" },
-  { label: "Proceso", href: "/#proceso" },
-  { label: "Blog", href: "/blog" },
+  { label: "Inicio", href: "https://bzcreators.com.ar/#inicio" },
+  { label: "Servicios", href: "https://bzcreators.com.ar/#servicios" },
+  { label: "Proceso", href: "https://bzcreators.com.ar/#proceso" },
+  { label: "OpenSource", href: "https://opensource.bzcreators.com.ar" },
+  { label: "Blog", href: "https://bzcreators.com.ar/blog" },
 ];
 
 const comenzarUrl = getWhatsAppUrl("Hola! Quiero comenzar un proyecto con BZ Creators.");
@@ -23,7 +24,7 @@ const Navbar = () => {
       </div>
       <nav className="fixed top-[40px] md:top-[32px] left-0 right-0 z-50 border-b border-border/30" style={{ background: "linear-gradient(135deg, hsl(0 0% 12%) 0%, hsl(0 0% 6%) 100%)" }}>
         <div className="container mx-auto flex items-center justify-between py-[4px]">
-          <a href="#inicio">
+          <a href="https://bzcreators.com.ar/#inicio">
             <img src={bzLogo} alt="BZ Creators" className="h-14 w-auto object-contain" />
           </a>
 

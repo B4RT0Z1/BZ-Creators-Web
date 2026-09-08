@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { cleanArticleHtml, parsePublished, slugify } from "../../server/content.js";
+import { cleanArticleHtml, cleanExternalUrl, parsePublished, slugify } from "../../server/content.js";
 
 describe("contenido del servidor", () => {
   it("genera slugs estables para títulos en español", () => {
@@ -17,5 +17,11 @@ describe("contenido del servidor", () => {
     expect(parsePublished("true")).toBe(true);
     expect(parsePublished("1")).toBe(true);
     expect(parsePublished("yes")).toBe(false);
+  });
+
+  it("acepta solo enlaces web externos con HTTP o HTTPS", () => {
+    expect(cleanExternalUrl("https://github.com/bz/example")).toBe("https://github.com/bz/example");
+    expect(cleanExternalUrl("javascript:alert(1)")).toBeNull();
+    expect(cleanExternalUrl("not-a-url")).toBeNull();
   });
 });

@@ -19,6 +19,7 @@ export const config = {
   nodeEnv: process.env.NODE_ENV || "development",
   port: readNumber(process.env.PORT, 3001),
   publicSiteUrl: (process.env.PUBLIC_SITE_URL || "http://localhost:8080").replace(/\/$/, ""),
+  openSourceSiteUrl: (process.env.OPEN_SOURCE_SITE_URL || "https://opensource.bzcreators.com.ar").replace(/\/$/, ""),
   jwtSecret: process.env.JWT_SECRET || "",
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || "12h",
   cookieSecure: readBoolean(process.env.COOKIE_SECURE, process.env.NODE_ENV === "production"),

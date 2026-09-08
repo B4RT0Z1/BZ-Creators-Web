@@ -9,7 +9,7 @@ import helmet from "helmet";
 import { config } from "./config.js";
 import { pool } from "./db.js";
 import { clearSession, createSession, requireAdmin } from "./auth.js";
-import { cleanArticleHtml, cleanText, parsePublished, slugify } from "./content.js";
+import { cleanArticleHtml, cleanExternalUrl, cleanText, parsePublished, slugify } from "./content.js";
 import { deleteLocalImage, uploadImage } from "./uploads.js";
 
 const app = express();
@@ -42,6 +42,26 @@ const postSelect = `
 `;
 
 const mapPost = (post) => ({ ...post, published: Boolean(post.published) });
+
+const openSourceSelect = `
+  SELECT id, name, slug, summary, description, github_url, website_url, image_url,
+         technologies, published, featured, sort_order, created_at, updated_at
+  FROM open_source_projects
+`;
+
+const mapOpenSourceProject = (project) => {
+  let technologies = project.technologies;
+  if (typeof technologies === "string") {
+    try { technologies = JSON.parse(technologies); } catch { technologies = []; }
+  }
+  return {
+    ...project,
+    technologies: Array.isArray(technologies) ? technologies : [],
+    published: Boolean(project.published),
+    featured: Boolean(project.featured),
+    sort_order: Number(project.sort_order) || 0,
+  };
+};
 
 const sendDatabaseError = (res, error) => {
   if (error?.errno === 1062) return res.status(409).json({ error: "Ya existe una publicación con ese slug" });
@@ -213,6 +233,137 @@ app.delete("/api/admin/posts/:id", requireAdmin, async (req, res) => {
   return res.status(204).end();
 });
 
+app.get("/api/open-source", async (_req, res) => {
+  try {
+    const [rows] = await pool.query(
+      `${openSourceSelect} WHERE published = TRUE ORDER BY featured DESC, sort_order ASC, created_at DESC`,
+    );
+    res.json({ projects: rows.map(mapOpenSourceProject) });
+  } catch (error) {
+    sendDatabaseError(res, error);
+  }
+});
+
+app.get("/api/admin/open-source", requireAdmin, async (_req, res) => {
+  try {
+    const [rows] = await pool.query(
+      `${openSourceSelect} ORDER BY featured DESC, sort_order ASC, created_at DESC`,
+    );
+    res.json({ projects: rows.map(mapOpenSourceProject) });
+  } catch (error) {
+    sendDatabaseError(res, error);
+  }
+});
+
+const readOpenSourceInput = (body) => {
+  const rawWebsiteUrl = cleanText(body.website_url, 2048);
+  const rawGithubUrl = cleanText(body.github_url, 2048);
+  const parsedGithubUrl = cleanExternalUrl(rawGithubUrl, { required: true });
+  const githubUrl = parsedGithubUrl && new URL(parsedGithubUrl).hostname.replace(/^www\./, "").toLowerCase() === "github.com"
+    ? parsedGithubUrl
+    : null;
+  const websiteUrl = cleanExternalUrl(rawWebsiteUrl);
+  const technologies = cleanText(body.technologies, 1000)
+    .split(",")
+    .map((technology) => technology.trim())
+    .filter(Boolean)
+    .slice(0, 20);
+
+  return {
+    name: cleanText(body.name, 255),
+    summary: cleanText(body.summary, 500),
+    description: cleanArticleHtml(body.description),
+    githubUrl,
+    websiteUrl,
+    websiteUrlInvalid: Boolean(rawWebsiteUrl && !websiteUrl),
+    technologies,
+    published: parsePublished(body.published),
+    featured: parsePublished(body.featured),
+    sortOrder: Math.max(-9999, Math.min(9999, Number.parseInt(body.sort_order, 10) || 0)),
+  };
+};
+
+app.post("/api/admin/open-source", requireAdmin, handleUpload, async (req, res) => {
+  const input = readOpenSourceInput(req.body);
+  if (!input.name || !input.summary || !input.description || !input.githubUrl || input.websiteUrlInvalid) {
+    if (req.file) await deleteLocalImage(`/uploads/${req.file.filename}`);
+    return res.status(400).json({ error: "Nombre, resumen, descripción y URL válida de GitHub son obligatorios" });
+  }
+
+  const id = randomUUID();
+  const slug = slugify(req.body.slug || input.name) || `project-${id.slice(0, 8)}`;
+  const imageUrl = req.file ? `/uploads/${req.file.filename}` : null;
+
+  try {
+    await pool.execute(
+      `INSERT INTO open_source_projects
+       (id, name, slug, summary, description, github_url, website_url, image_url, technologies, published, featured, sort_order)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        id, input.name, slug, input.summary, input.description, input.githubUrl, input.websiteUrl,
+        imageUrl, JSON.stringify(input.technologies), input.published, input.featured, input.sortOrder,
+      ],
+    );
+    const [rows] = await pool.execute(`${openSourceSelect} WHERE id = ? LIMIT 1`, [id]);
+    return res.status(201).json({ project: mapOpenSourceProject(rows[0]) });
+  } catch (error) {
+    if (imageUrl) await deleteLocalImage(imageUrl);
+    return sendDatabaseError(res, error);
+  }
+});
+
+app.put("/api/admin/open-source/:id", requireAdmin, handleUpload, async (req, res) => {
+  const input = readOpenSourceInput(req.body);
+  if (!input.name || !input.summary || !input.description || !input.githubUrl || input.websiteUrlInvalid) {
+    if (req.file) await deleteLocalImage(`/uploads/${req.file.filename}`);
+    return res.status(400).json({ error: "Nombre, resumen, descripción y URL válida de GitHub son obligatorios" });
+  }
+
+  const [existingRows] = await pool.execute(
+    "SELECT id, image_url FROM open_source_projects WHERE id = ? LIMIT 1",
+    [req.params.id],
+  );
+  if (existingRows.length === 0) {
+    if (req.file) await deleteLocalImage(`/uploads/${req.file.filename}`);
+    return res.status(404).json({ error: "Proyecto OpenSource no encontrado" });
+  }
+
+  const oldImageUrl = existingRows[0].image_url;
+  const imageUrl = req.file ? `/uploads/${req.file.filename}` : oldImageUrl;
+  const slug = slugify(req.body.slug || input.name) || `project-${req.params.id.slice(0, 8)}`;
+
+  try {
+    await pool.execute(
+      `UPDATE open_source_projects
+       SET name = ?, slug = ?, summary = ?, description = ?, github_url = ?, website_url = ?,
+           image_url = ?, technologies = ?, published = ?, featured = ?, sort_order = ?
+       WHERE id = ?`,
+      [
+        input.name, slug, input.summary, input.description, input.githubUrl, input.websiteUrl,
+        imageUrl, JSON.stringify(input.technologies), input.published, input.featured, input.sortOrder,
+        req.params.id,
+      ],
+    );
+    if (req.file && oldImageUrl && oldImageUrl !== imageUrl) await deleteLocalImage(oldImageUrl);
+    const [rows] = await pool.execute(`${openSourceSelect} WHERE id = ? LIMIT 1`, [req.params.id]);
+    return res.json({ project: mapOpenSourceProject(rows[0]) });
+  } catch (error) {
+    if (req.file) await deleteLocalImage(imageUrl);
+    return sendDatabaseError(res, error);
+  }
+});
+
+app.delete("/api/admin/open-source/:id", requireAdmin, async (req, res) => {
+  const [rows] = await pool.execute(
+    "SELECT image_url FROM open_source_projects WHERE id = ? LIMIT 1",
+    [req.params.id],
+  );
+  if (rows.length === 0) return res.status(404).json({ error: "Proyecto OpenSource no encontrado" });
+  await pool.execute("DELETE FROM open_source_projects WHERE id = ?", [req.params.id]);
+  await deleteLocalImage(rows[0].image_url);
+  return res.status(204).end();
+});
+
 app.get("/api/posts/:postId/comments", async (req, res) => {
   const [rows] = await pool.execute(
     `SELECT id, author_name, content, created_at
@@ -254,6 +405,7 @@ app.get("/sitemap.xml", async (_req, res) => {
   const urls = [
     `<url><loc>${config.publicSiteUrl}</loc><changefreq>daily</changefreq><priority>1.0</priority></url>`,
     `<url><loc>${config.publicSiteUrl}/blog</loc><changefreq>daily</changefreq><priority>0.8</priority></url>`,
+    `<url><loc>${config.openSourceSiteUrl}</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>`,
     ...posts.map((post) => {
       const date = new Date(post.last_modified).toISOString().slice(0, 10);
       return `<url><loc>${config.publicSiteUrl}/blog/${encodeURIComponent(post.slug)}</loc><lastmod>${date}</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>`;

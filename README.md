@@ -29,6 +29,7 @@ El frontend queda en `http://localhost:8080` y la API en `http://localhost:3001`
 | `ADMIN_EMAIL`, `ADMIN_PASSWORD` | Crea el primer administrador si no existe |
 | `COOKIE_SECURE` | Debe ser `true` en producción HTTPS |
 | `PUBLIC_SITE_URL` | URL canónica usada por el sitemap |
+| `OPEN_SOURCE_SITE_URL` | URL canónica de la sección OpenSource |
 | `UPLOAD_DIR` | Directorio persistente de imágenes |
 | `MAX_UPLOAD_MB` | Tamaño máximo por imagen |
 | `VITE_API_URL` | Déjalo vacío en la arquitectura recomendada de mismo dominio |
@@ -47,6 +48,7 @@ En el hosting configura:
 - Un volumen persistente montado en el valor absoluto de `UPLOAD_DIR`.
 - Health check en `/api/health`.
 - Puerto interno `3001` y dominio conectado a ese puerto.
+- Los dominios `bzcreators.com.ar`, `www.bzcreators.com.ar` y `opensource.bzcreators.com.ar` conectados a la misma aplicación.
 
 ## Comandos de verificación
 

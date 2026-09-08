@@ -21,6 +21,23 @@ export interface Comment {
   created_at: string;
 }
 
+export interface OpenSourceProject {
+  id: string;
+  name: string;
+  slug: string;
+  summary: string;
+  description: string;
+  github_url: string;
+  website_url: string | null;
+  image_url: string | null;
+  technologies: string[];
+  published: boolean;
+  featured: boolean;
+  sort_order: number;
+  created_at: string;
+  updated_at: string;
+}
+
 export class ApiError extends Error {
   status: number;
 
@@ -86,4 +103,26 @@ export const commentsApi = {
       body: JSON.stringify(input),
     })
   ).comment,
+};
+
+export const openSourceApi = {
+  listPublic: async () => (
+    await apiFetch<{ projects: OpenSourceProject[] }>("/api/open-source")
+  ).projects,
+  listAdmin: async () => (
+    await apiFetch<{ projects: OpenSourceProject[] }>("/api/admin/open-source")
+  ).projects,
+  create: async (formData: FormData) => (
+    await apiFetch<{ project: OpenSourceProject }>("/api/admin/open-source", {
+      method: "POST",
+      body: formData,
+    })
+  ).project,
+  update: async (id: string, formData: FormData) => (
+    await apiFetch<{ project: OpenSourceProject }>(`/api/admin/open-source/${id}`, {
+      method: "PUT",
+      body: formData,
+    })
+  ).project,
+  remove: (id: string) => apiFetch<void>(`/api/admin/open-source/${id}`, { method: "DELETE" }),
 };
