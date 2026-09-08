@@ -19,7 +19,7 @@ export default function BlogPost() {
         setPost(data);
         // SEO logic
         document.title = data.title + " | BZ Creators";
-        
+
         let metaDesc = document.querySelector('meta[name="description"]');
         if (!metaDesc) {
           metaDesc = document.createElement('meta');
@@ -29,7 +29,7 @@ export default function BlogPost() {
         // Use meta_description if it exists, otherwise extract plain text from content
         const plainTextContent = data.content.replace(/<[^>]+>/g, '').substring(0, 160) + '...';
         metaDesc.setAttribute('content', data.meta_description || plainTextContent);
-        
+
         if (data.keywords) {
           let metaKeywords = document.querySelector('meta[name="keywords"]');
           if (!metaKeywords) {
@@ -56,41 +56,41 @@ export default function BlogPost() {
   if (loading) return <div className="min-h-screen flex items-center justify-center"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div></div>;
 
   if (!post) return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50">
-      <h1 className="text-2xl font-bold text-slate-800 mb-4">Post no encontrado</h1>
-      <Link to="/blog" className="text-blue-600 hover:underline">Volver al blog</Link>
+    <div className="min-h-screen flex flex-col items-center justify-center lab-page">
+      <h1 className="text-2xl font-bold text-foreground mb-4">Post no encontrado</h1>
+      <Link to="/blog" className="text-violet-400 hover:underline">Volver al blog</Link>
     </div>
   );
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col">
+    <div className="min-h-screen lab-page flex flex-col">
       <Navbar />
-      <main className="flex-1 w-full pt-24">
+      <main id="main-content" className="flex-1 w-full pt-32">
         <div className="max-w-4xl mx-auto px-4 relative z-10 pb-12">
-          <div className="bg-white rounded-2xl shadow-xl p-8 md:p-12">
-            <Link to="/blog" className="inline-flex items-center text-blue-600 hover:text-blue-800 mb-8 transition-colors">
+          <div className="bg-card rounded-2xl shadow-xl p-5 sm:p-8 md:p-12">
+            <Link to="/blog" className="inline-flex items-center text-violet-400 hover:text-violet-300 mb-8 transition-colors">
               <ArrowLeft className="w-4 h-4 mr-2" /> Volver a artículos
             </Link>
-            
-            <h1 className="text-3xl md:text-5xl font-bold text-slate-900 mb-6 leading-tight">{post.title}</h1>
-            
-            <div className="flex items-center text-slate-500 mb-8 pb-8 border-b border-slate-100">
+
+            <h1 className="text-3xl md:text-5xl font-bold text-foreground mb-6 leading-tight">{post.title}</h1>
+
+            <div className="flex items-center text-muted-foreground mb-8 pb-8 border-b border-border">
               <span>Publicado el {new Date(post.created_at).toLocaleDateString()}</span>
             </div>
 
             {post.image_url && (
-              <div className="w-full rounded-2xl overflow-hidden mb-10 shadow-sm border border-slate-100">
+              <div className="w-full rounded-2xl overflow-hidden mb-10 shadow-sm border border-border">
                 <img src={assetUrl(post.image_url)} alt={post.title} className="w-full h-auto object-cover max-h-[500px]" />
               </div>
             )}
-            
+
             {/* The dangerouslySetInnerHTML is required because quill saves HTML */}
-            <div 
-              className="prose prose-lg max-w-none 
-                         text-slate-800 [&_*]:!text-slate-800 [&_a]:!text-blue-600 hover:[&_a]:!text-blue-800
-                         prose-headings:font-bold prose-headings:!text-slate-900
+            <div
+              className="prose prose-invert prose-lg max-w-none
+                         text-foreground [&_*]:!text-foreground [&_a]:!text-violet-400 hover:[&_a]:!text-violet-300
+                         prose-headings:font-bold prose-headings:!text-foreground
                          prose-img:rounded-xl prose-img:shadow-md"
-              dangerouslySetInnerHTML={{ __html: post.content }} 
+              dangerouslySetInnerHTML={{ __html: post.content }}
             />
           </div>
         </div>

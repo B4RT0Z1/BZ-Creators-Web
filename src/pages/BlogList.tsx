@@ -29,30 +29,30 @@ export default function BlogList() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col">
+    <div className="min-h-screen lab-page flex flex-col">
       <Navbar />
-      <main className="flex-1 container mx-auto px-4 py-12">
-        <h1 className="text-4xl font-bold text-slate-900 mb-8 text-center">Nuestro Blog</h1>
-        
+      <main id="main-content" className="flex-1 lab-shell pb-20 pt-36">
+        <h1 className="text-4xl font-bold text-foreground mb-8 text-center">Bitácora del laboratorio</h1>
+
         {loading ? (
-          <p className="text-center text-slate-500">Cargando artículos...</p>
+          <p className="text-center text-muted-foreground">Cargando artículos...</p>
         ) : posts.length === 0 ? (
-          <p className="text-center text-slate-500">Pronto publicaremos nuevos artículos.</p>
+          <p className="text-center text-muted-foreground">Pronto publicaremos nuevos artículos.</p>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {posts.map((post) => (
-              <Link to={`/blog/${post.slug}`} key={post.id} className="bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow overflow-hidden border border-slate-100 flex flex-col group">
-                <div className="h-48 bg-slate-200 overflow-hidden relative">
+              <Link to={`/blog/${post.slug}`} key={post.id} className="bg-card rounded-2xl shadow-sm hover:shadow-md transition-shadow overflow-hidden border border-border flex flex-col group">
+                <div className="h-48 bg-muted overflow-hidden relative">
                   {post.image_url ? (
                     <img src={assetUrl(post.image_url)} alt={post.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-slate-400">Sin Imagen</div>
+                    <div className="w-full h-full flex items-center justify-center text-muted-foreground">Sin Imagen</div>
                   )}
                 </div>
                 <div className="p-6 flex-1 flex flex-col">
-                  <span className="text-sm text-blue-600 font-medium mb-2">{new Date(post.created_at).toLocaleDateString()}</span>
-                  <h2 className="text-xl font-bold text-slate-900 mb-2 group-hover:text-blue-600 transition-colors line-clamp-2">{post.title}</h2>
-                  <p className="text-slate-500 line-clamp-3">{textExcerpt(post.content)}</p>
+                  <span className="text-sm text-violet-400 font-medium mb-2">{new Date(post.created_at).toLocaleDateString()}</span>
+                  <h2 className="text-xl font-bold text-foreground mb-2 group-hover:text-violet-400 transition-colors line-clamp-2">{post.title}</h2>
+                  <p className="text-muted-foreground line-clamp-3">{textExcerpt(post.content)}</p>
                 </div>
               </Link>
             ))}

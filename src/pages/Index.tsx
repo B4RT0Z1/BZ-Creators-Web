@@ -1,37 +1,8 @@
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
-import StatsSection from "@/components/StatsSection";
-import ToolsSection from "@/components/ToolsSection";
-import StorySection from "@/components/StorySection";
-import ServicesSection from "@/components/ServicesSection";
-import ProcessSection from "@/components/ProcessSection";
-import PricingSection from "@/components/PricingSection";
-import ProductsSection from "@/components/ProductsSection";
-import TestimonialsSection from "@/components/TestimonialsSection";
-import FAQSection from "@/components/FAQSection";
-import CTASection from "@/components/CTASection";
+import LabSections from "@/components/LabSections";
 import Footer from "@/components/Footer";
-import FloatingCTA from "@/components/FloatingCTA";
 
-const Index = () => {
-  return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
-      <HeroSection />
-      <StatsSection />
-      <ToolsSection />
-      <StorySection />
-      <ServicesSection />
-      <ProcessSection />
-      <PricingSection />
-      <ProductsSection />
-      <TestimonialsSection />
-      <FAQSection />
-      <CTASection />
-      <Footer />
-      <FloatingCTA />
-    </div>
-  );
-};
-
-export default Index;
+export default function Index() {
+  return <div className="lab-page"><Navbar /><main id="main-content"><HeroSection /><LabSections /></main><Footer /></div>;
+}

@@ -7,7 +7,7 @@ const Team = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <main className="pt-32">
+      <main id="main-content" className="pt-32">
         <div className="container mx-auto px-4 mb-12">
           <motion.div
             initial={{ opacity: 0, y: 20 }}

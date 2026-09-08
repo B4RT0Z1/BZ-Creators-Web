@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -5,12 +6,12 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
-import AdminLogin from "./pages/AdminLogin";
-import AdminDashboard from "./pages/AdminDashboard";
-import BlogList from "./pages/BlogList";
-import BlogPost from "./pages/BlogPost";
-import Team from "./pages/Team";
-import OpenSource from "./pages/OpenSource";
+const AdminLogin = lazy(() => import("./pages/AdminLogin"));
+const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
+const BlogList = lazy(() => import("./pages/BlogList"));
+const BlogPost = lazy(() => import("./pages/BlogPost"));
+const Team = lazy(() => import("./pages/Team"));
+const OpenSource = lazy(() => import("./pages/OpenSource"));
 
 const queryClient = new QueryClient();
 
@@ -39,7 +40,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <AppRoutes />
+        <Suspense fallback={<main className="lab-shell py-32" role="status">Cargando el laboratorio…</main>}><AppRoutes /></Suspense>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

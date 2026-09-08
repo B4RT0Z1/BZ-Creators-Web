@@ -1,252 +1,49 @@
-import { motion } from "framer-motion";
-import { ArrowRight, Sparkles, Zap, Shield, Clock } from "lucide-react";
-import { useEffect, useRef } from "react";
-import { getWhatsAppUrl } from "@/lib/constants";
+import { useState } from "react";
+import { ArrowDown, ArrowUpRight, Check, Code2, GitBranch, Layers3, Terminal } from "lucide-react";
 
-const badges = [
-  { icon: Sparkles, label: "IA Generativa" },
-  { icon: Zap, label: "Entrega Rápida" },
-  { icon: Shield, label: "Precio Fijo" },
-  { icon: Clock, label: "Modelos Custom" },
+const stages = [
+  { label: "Explorar", title: "Toda solución empieza con una buena pregunta.", log: "Definir el problema · Identificar usuarios · Acordar el alcance", output: "Hipótesis de producto", icon: Layers3 },
+  { label: "Construir", title: "De la hipótesis a un sistema que podés probar.", log: "Diseñar la experiencia · Conectar los datos · Iterar el prototipo", output: "Prototipo funcional", icon: Code2 },
+  { label: "Validar", title: "Probar, aprender y volver a construir.", log: "Revisar los flujos · Medir el comportamiento · Preparar la entrega", output: "Plan de validación", icon: Check },
 ];
 
-const FloatingOrb = ({ delay, x, y, size, color }: { delay: number; x: string; y: string; size: number; color: string }) => (
-  <motion.div
-    className="absolute rounded-full blur-[80px] opacity-30"
-    style={{ left: x, top: y, width: size, height: size, background: color }}
-    animate={{
-      x: [0, 30, -20, 10, 0],
-      y: [0, -25, 15, -10, 0],
-      scale: [1, 1.2, 0.9, 1.1, 1],
-      opacity: [0.2, 0.4, 0.15, 0.35, 0.2],
-    }}
-    transition={{ duration: 12, repeat: Infinity, delay, ease: "easeInOut" }}
-  />
-);
-
-const GridBackground = () => (
-  <div className="absolute inset-0 overflow-hidden opacity-[0.04]">
-    <div
-      className="absolute inset-0"
-      style={{
-        backgroundImage: `linear-gradient(hsl(var(--foreground)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--foreground)) 1px, transparent 1px)`,
-        backgroundSize: "60px 60px",
-      }}
-    />
-    <motion.div
-      className="absolute inset-0"
-      style={{
-        background: "radial-gradient(circle 400px at var(--mx, 50%) var(--my, 50%), hsl(265 80% 60% / 0.15), transparent)",
-      }}
-      animate={{ opacity: [0.5, 1, 0.5] }}
-      transition={{ duration: 4, repeat: Infinity }}
-    />
-  </div>
-);
-
-const particles = Array.from({ length: 25 }, (_, i) => ({
-  id: i,
-  x: Math.random() * 100,
-  y: Math.random() * 100,
-  size: Math.random() * 3 + 1,
-  duration: Math.random() * 8 + 6,
-  delay: Math.random() * 5,
-}));
-
-const ParticleField = () => (
-  <div className="absolute inset-0 overflow-hidden">
-    {particles.map((p) => (
-      <motion.div
-        key={p.id}
-        className="absolute rounded-full bg-primary/40"
-        style={{ left: `${p.x}%`, top: `${p.y}%`, width: p.size, height: p.size }}
-        animate={{
-          y: [0, -40, 0],
-          opacity: [0, 0.8, 0],
-        }}
-        transition={{ duration: p.duration, repeat: Infinity, delay: p.delay, ease: "easeInOut" }}
-      />
-    ))}
-  </div>
-);
-
-const AnimatedText = ({ text, className, delay = 0 }: { text: string; className?: string; delay?: number }) => {
-  const words = text.split(" ");
+export default function HeroSection() {
+  const [active, setActive] = useState(1);
+  const stage = stages[active];
   return (
-    <span className={className}>
-      {words.map((word, i) => (
-        <motion.span
-          key={i}
-          className="inline-block"
-          initial={{ opacity: 0, y: 40, rotateX: -40 }}
-          animate={{ opacity: 1, y: 0, rotateX: 0 }}
-          transition={{ duration: 0.6, delay: delay + i * 0.08, ease: [0.25, 0.46, 0.45, 0.94] }}
-        >
-          {word}&nbsp;
-        </motion.span>
-      ))}
-    </span>
-  );
-};
-
-const HeroSection = () => {
-  const glowRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      const x = (e.clientX / window.innerWidth) * 100;
-      const y = (e.clientY / window.innerHeight) * 100;
-      document.documentElement.style.setProperty("--mx", `${x}%`);
-      document.documentElement.style.setProperty("--my", `${y}%`);
-      if (glowRef.current) {
-        glowRef.current.style.left = `${x}%`;
-        glowRef.current.style.top = `${y}%`;
-      }
-    };
-    window.addEventListener("mousemove", handleMouseMove);
-    return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, []);
-
-  return (
-    <section id="inicio" className="relative min-h-screen overflow-hidden pt-40 md:pt-36">
-      <div className="absolute inset-0 bg-gradient-hero" />
-      <GridBackground />
-      <ParticleField />
-
-      <FloatingOrb delay={0} x="10%" y="20%" size={400} color="hsl(265 80% 60% / 0.12)" />
-      <FloatingOrb delay={2} x="70%" y="15%" size={350} color="hsl(280 90% 50% / 0.1)" />
-      <FloatingOrb delay={4} x="50%" y="60%" size={300} color="hsl(24 95% 55% / 0.08)" />
-      <FloatingOrb delay={6} x="20%" y="70%" size={250} color="hsl(265 60% 40% / 0.1)" />
-
-      <div
-        ref={glowRef}
-        className="pointer-events-none absolute h-[600px] w-[600px] rounded-full blur-[120px]"
-        style={{
-          background: "radial-gradient(circle, hsl(265 80% 60% / 0.08), transparent 70%)",
-          left: "50%",
-          top: "50%",
-          transform: "translate(-50%, -50%)",
-        }}
-      />
-
-      <motion.div
-        className="absolute left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-primary/20 to-transparent"
-        animate={{ top: ["0%", "100%"] }}
-        transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-      />
-
-      <div className="container relative mx-auto flex flex-col items-center px-4 pt-20 text-center">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5, type: "spring" }}
-          className="mb-8 inline-flex items-center gap-2 rounded-full border border-border bg-muted/50 px-4 py-2 text-sm text-muted-foreground backdrop-blur-sm"
-        >
-          <motion.span
-            animate={{ rotate: [0, 15, -15, 0] }}
-            transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
-          >
-            <Sparkles size={14} className="text-primary" />
-          </motion.span>
-          Agencia de IA · Software a Medida
-        </motion.div>
-
-        <h1 className="max-w-4xl text-5xl font-bold leading-tight tracking-tight md:text-7xl" style={{ perspective: "800px" }}>
-          <AnimatedText text="Escala tu visión con el" delay={0.2} />
-          <motion.span
-            className="text-gradient-orange inline-block"
-            initial={{ opacity: 0, scale: 0.5 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.7, delay: 0.9, type: "spring", bounce: 0.4 }}
-          >
-            <motion.span
-              className="inline-block"
-              animate={{ backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] }}
-              transition={{ duration: 5, repeat: Infinity }}
-              style={{
-                backgroundImage: "linear-gradient(135deg, hsl(24 95% 55%), hsl(15 90% 50%), hsl(35 95% 55%), hsl(24 95% 55%))",
-                backgroundSize: "200% 200%",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-              }}
-            >
-              poder de la IA
-            </motion.span>
-          </motion.span>
-          <AnimatedText text=" hoy mismo." delay={1.1} />
-        </h1>
-
-        <motion.p
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 1.4 }}
-          className="mt-6 max-w-2xl text-lg text-muted-foreground md:text-xl"
-        >
-          Desarrollamos ecosistemas digitales inteligentes que impulsan el crecimiento de tu empresa. 
-          Más que una agencia, somos tu motor de innovación tecnológica.
-        </motion.p>
-
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 1.6 }}
-          className="mt-10 flex flex-col gap-4 sm:flex-row"
-        >
-          <motion.a
-            href={getWhatsAppUrl("Hola! Quiero agendar una consulta gratuita para mi proyecto.")}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-gradient-primary px-8 py-3.5 font-medium text-primary-foreground transition-all hover:shadow-glow-primary"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            <motion.span
-              className="absolute inset-0 bg-white/10"
-              initial={{ x: "-100%" }}
-              whileHover={{ x: "100%" }}
-              transition={{ duration: 0.5 }}
-            />
-            Agenda tu consulta gratis
-            <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" />
-          </motion.a>
-          <motion.a
-            href="#servicios"
-            className="inline-flex items-center gap-2 rounded-full border border-border px-8 py-3.5 font-medium text-foreground transition-colors hover:bg-muted"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            Ver servicios
-          </motion.a>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 1.8 }}
-          className="mt-20 grid grid-cols-2 gap-4 md:grid-cols-4"
-        >
-          {badges.map((badge, i) => (
-            <motion.div
-              key={badge.label}
-              className="flex flex-col items-center gap-3 rounded-xl border border-border bg-card/50 px-6 py-5 backdrop-blur-sm"
-              whileHover={{ y: -4, borderColor: "hsl(265 80% 60% / 0.4)" }}
-              transition={{ type: "spring", stiffness: 300 }}
-            >
-              <motion.div
-                animate={{ rotate: [0, 5, -5, 0] }}
-                transition={{ duration: 4, repeat: Infinity, delay: i * 0.5 }}
-              >
-                <badge.icon size={18} className="text-primary" />
-              </motion.div>
-              <span className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
-                {badge.label}
-              </span>
-            </motion.div>
-          ))}
-        </motion.div>
+    <section id="inicio" className="lab-hero lab-shell">
+      <div className="hero-copy">
+        <p className="lab-eyebrow"><span className="signal-dot" /> LABORATORIO DE PRODUCTO TECNOLÓGICO</p>
+        <h1>Ideas que se<br />convierten en<br /><span>tecnología.</span></h1>
+        <p className="hero-description">Exploramos, diseñamos y construimos software.<br className="hidden lg:block" /> Unimos inteligencia artificial e ingeniería para llevar lo que imaginás al mundo real.</p>
+        <div className="hero-actions">
+          <a className="lab-button primary" href="#productos">Explorar proyectos <ArrowUpRight size={17} /></a>
+          <a className="lab-text-link" href="#contacto">Construyamos algo <ArrowUpRight size={16} /></a>
+        </div>
+        <p className="hero-footnote"><span>SOFTWARE</span><span>IA APLICADA</span><span>OPEN SOURCE</span></p>
       </div>
+      <div className="lab-workbench" aria-label="Demostración interactiva de nuestro proceso">
+        <div className="workbench-top"><span><Terminal size={14} /> bz / workspace</span><span className="demo-label">DEMO INTERACTIVA</span></div>
+        <div className="workbench-tabs" aria-label="Etapas del proceso">
+          {stages.map((item, index) => <button key={item.label} aria-pressed={active === index} onClick={() => setActive(index)}><span>0{index + 1}</span>{item.label}</button>)}
+        </div>
+        <div className="system-map" aria-hidden="true">
+          <div className="map-grid" />
+          <div className="map-orbit orbit-one" /><div className="map-orbit orbit-two" />
+          <div className="map-line line-left" /><div className="map-line line-right" />
+          <div className="map-node node-left"><Layers3 size={19} /><span>idea</span></div>
+          <div className="map-core"><stage.icon size={35} strokeWidth={1.3} /><span>BZ ENGINE</span></div>
+          <div className="map-node node-right"><Code2 size={19} /><span>producto</span></div>
+          <span className="map-caption">INTELIGENCIA + INGENIERÍA</span>
+        </div>
+        <div className="workbench-output" aria-live="polite" aria-atomic="true">
+          <span className="lab-eyebrow">0{active + 1} / {stage.output}</span>
+          <h2>{stage.title}</h2>
+          <p><span className="text-violet-400">›</span> {stage.log}</p>
+        </div>
+        <div className="workbench-bottom"><span><GitBranch size={13} /> idea → prototipo → producto</span><span>hecho para iterar</span></div>
+      </div>
+      <a className="hero-scroll" href="#productos"><ArrowDown size={14} /> DENTRO DEL LABORATORIO</a>
     </section>
   );
-};
-
-export default HeroSection;
+}
