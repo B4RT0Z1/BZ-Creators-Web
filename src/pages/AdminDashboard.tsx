@@ -1,17 +1,12 @@
 import { useState, useEffect } from "react";
-import { createClient } from "@insforge/sdk";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { useNavigate, Link } from "react-router-dom";
-import { LayoutDashboard, FileText, Settings, LogOut, Plus, Trash2, Edit, ExternalLink } from "lucide-react";
-import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
+import { LayoutDashboard, FileText, LogOut, Plus, Trash2, Edit, ExternalLink } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
-
-const INSFORGE_URL = import.meta.env.VITE_INSFORGE_URL || "https://6w3sgde5.us-east.insforge.app";
-const INSFORGE_ANON_KEY = import.meta.env.VITE_INSFORGE_ANON_KEY || "ik_70965bdd4ef84eae1800692c1cdf68fd";
-const supabase = createClient({ baseUrl: INSFORGE_URL, anonKey: INSFORGE_ANON_KEY });
+import { ApiError, authApi, Post, postsApi } from "@/lib/api";
+import RichTextEditor from "@/components/RichTextEditor";
 
 const chartData = [
   { name: 'Lun', vistas: 120 },
@@ -25,7 +20,9 @@ const chartData = [
 
 export default function AdminDashboard() {
   const [view, setView] = useState<"dashboard" | "posts" | "editor">("dashboard");
-  const [posts, setPosts] = useState<any[]>([]);
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [ready, setReady] = useState(false);
+  const [saving, setSaving] = useState(false);
   const navigate = useNavigate();
 
   // Editor states
@@ -37,35 +34,53 @@ export default function AdminDashboard() {
   const [keywords, setKeywords] = useState("");
 
   useEffect(() => {
-    fetchPosts();
-  }, []);
+    let active = true;
+    const load = async () => {
+      try {
+        await authApi.me();
+        const data = await postsApi.listAdmin();
+        if (active) setPosts(data);
+      } catch (error) {
+        if (error instanceof ApiError && error.status === 401) {
+          navigate("/admin", { replace: true });
+        } else {
+          toast.error("No se pudo cargar el panel");
+        }
+      } finally {
+        if (active) setReady(true);
+      }
+    };
+    load();
+    return () => { active = false; };
+  }, [navigate]);
 
   const fetchPosts = async () => {
-    const { data, error } = await supabase.database.from('posts').select('*').order('created_at', { ascending: false });
-    if (data) setPosts(data);
+    setPosts(await postsApi.listAdmin());
   };
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
-    navigate("/admin");
+    await authApi.logout().catch(() => undefined);
+    navigate("/admin", { replace: true });
   };
 
   const handleDelete = async (id: string) => {
     if (!confirm("¿Seguro que deseas borrar este post?")) return;
-    const { error } = await supabase.database.from('posts').delete().eq('id', id);
-    if (error) toast.error("Error al borrar el post");
-    else {
+    try {
+      await postsApi.remove(id);
       toast.success("Post borrado");
-      fetchPosts();
+      await fetchPosts();
+    } catch (error) {
+      toast.error(error instanceof ApiError ? error.message : "Error al borrar el post");
     }
   };
 
-  const handleEdit = (post: any) => {
+  const handleEdit = (post: Post) => {
     setEditingId(post.id);
     setTitle(post.title);
     setContent(post.content);
     setMetaDesc(post.meta_description || "");
     setKeywords(post.keywords || "");
+    setFile(null);
     setView("editor");
   };
 
@@ -80,55 +95,40 @@ export default function AdminDashboard() {
   };
 
   const handleSavePost = async () => {
+    if (!title.trim() || !content.trim()) {
+      toast.error("Título y contenido son obligatorios");
+      return;
+    }
+
+    setSaving(true);
     try {
-      let imageUrl = "";
-      if (file) {
-        const fileExt = file.name.split('.').pop();
-        const fileName = `${Math.random()}.${fileExt}`;
-        const { error: uploadError } = await supabase.storage.from('blog_images').upload(fileName, file);
-        if (uploadError) {
-          console.error("Upload error:", uploadError);
-          return toast.error("Error al subir imagen: " + uploadError.message);
-        }
-        const result = supabase.storage.from('blog_images').getPublicUrl(fileName);
-        // Supabase returns { data: { publicUrl: string } }, but let's handle variations just in case
-        imageUrl = result?.data?.publicUrl || result?.publicURL || (typeof result === 'string' ? result : "");
-      }
+      const formData = new FormData();
+      formData.set("title", title.trim());
+      formData.set("content", content);
+      formData.set("published", "true");
+      formData.set("meta_description", metaDesc.trim());
+      formData.set("keywords", keywords.trim());
+      if (file) formData.set("image", file);
 
-      const slug = title.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
-      
-      const postData: any = { 
-        title, 
-        content, 
-        slug, 
-        published: true,
-        meta_description: metaDesc,
-        keywords: keywords 
-      };
-      if (imageUrl) postData.image_url = imageUrl;
-
-      let error;
       if (editingId) {
-        const res = await supabase.database.from('posts').update(postData).eq('id', editingId);
-        error = res.error;
+        await postsApi.update(editingId, formData);
       } else {
-        const res = await supabase.database.from('posts').insert([postData]);
-        error = res.error;
+        await postsApi.create(formData);
       }
-
-      if (error) {
-        console.error("DB Error:", error);
-        toast.error("Error guardando el post: " + error.message);
-      } else {
-        toast.success(editingId ? "Post actualizado" : "Post creado exitosamente");
-        setView("posts");
-        fetchPosts();
-      }
-    } catch (err: any) {
-      console.error("Fatal error saving post:", err);
-      toast.error("Error crítico guardando: " + (err.message || "Desconocido"));
+      toast.success(editingId ? "Post actualizado" : "Post creado exitosamente");
+      setFile(null);
+      setView("posts");
+      await fetchPosts();
+    } catch (error) {
+      toast.error(error instanceof ApiError ? error.message : "No se pudo guardar el post");
+    } finally {
+      setSaving(false);
     }
   };
+
+  if (!ready) {
+    return <div className="flex min-h-screen items-center justify-center bg-slate-50 text-slate-600">Cargando panel...</div>;
+  }
 
   return (
     <div className="flex h-screen bg-slate-50">
@@ -298,20 +298,12 @@ export default function AdminDashboard() {
 
                 <div>
                   <label className="block text-sm font-semibold text-slate-700 mb-2">Contenido</label>
-                  {/* Aquí solucionamos el problema del color del texto envolviéndolo en un contenedor que fuerza el color oscuro */}
-                  <div className="text-slate-900 [&_.ql-editor]:min-h-[300px] [&_.ql-editor]:text-slate-900 [&_.ql-container]:border-slate-200 [&_.ql-toolbar]:border-slate-200 [&_.ql-toolbar]:bg-slate-50 rounded-lg overflow-hidden border border-slate-200">
-                    <ReactQuill 
-                      theme="snow" 
-                      value={content} 
-                      onChange={setContent}
-                      placeholder="Escribe el contenido de tu post aquí..."
-                    />
-                  </div>
+                  <RichTextEditor value={content} onChange={setContent} />
                 </div>
 
                 <div className="pt-4 border-t border-slate-100">
-                  <Button onClick={handleSavePost} className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-8 py-2 h-12 text-lg">
-                    {editingId ? "Actualizar Post" : "Publicar Post"}
+                  <Button disabled={saving} onClick={handleSavePost} className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-8 py-2 h-12 text-lg">
+                    {saving ? "Guardando..." : editingId ? "Actualizar Post" : "Publicar Post"}
                   </Button>
                 </div>
               </div>

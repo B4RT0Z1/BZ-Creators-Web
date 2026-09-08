@@ -1,28 +1,21 @@
 import { useState, useEffect } from "react";
-import { createClient } from "@insforge/sdk";
 import { useParams, Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import CommentsSection from "@/components/CommentsSection";
 import { ArrowLeft } from "lucide-react";
-
-const INSFORGE_URL = import.meta.env.VITE_INSFORGE_URL || "https://6w3sgde5.us-east.insforge.app";
-const INSFORGE_ANON_KEY = import.meta.env.VITE_INSFORGE_ANON_KEY || "ik_70965bdd4ef84eae1800692c1cdf68fd";
-const supabase = createClient({ baseUrl: INSFORGE_URL, anonKey: INSFORGE_ANON_KEY });
+import { assetUrl, Post, postsApi } from "@/lib/api";
 
 export default function BlogPost() {
   const { slug } = useParams();
-  const [post, setPost] = useState<any>(null);
+  const [post, setPost] = useState<Post | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchPost = async () => {
-      const { data } = await supabase.database
-        .from("posts")
-        .select("*")
-        .eq("slug", slug)
-        .single();
-      if (data) {
+      try {
+        if (!slug) return;
+        const data = await postsApi.getPublic(slug);
         setPost(data);
         // SEO logic
         document.title = data.title + " | BZ Creators";
@@ -46,8 +39,11 @@ export default function BlogPost() {
           }
           metaKeywords.setAttribute('content', data.keywords);
         }
+      } catch {
+        setPost(null);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
     fetchPost();
   }, [slug]);
@@ -84,7 +80,7 @@ export default function BlogPost() {
 
             {post.image_url && (
               <div className="w-full rounded-2xl overflow-hidden mb-10 shadow-sm border border-slate-100">
-                <img src={post.image_url} alt={post.title} className="w-full h-auto object-cover max-h-[500px]" />
+                <img src={assetUrl(post.image_url)} alt={post.title} className="w-full h-auto object-cover max-h-[500px]" />
               </div>
             )}
             

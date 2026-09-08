@@ -1,73 +1,57 @@
-# Welcome to your Lovable project
+# BZ Creators Web
 
-## Project info
+Sitio público, blog y CMS administrativo de BZ Creators. La aplicación usa React/Vite en el frontend y una API Node/Express con MySQL 8.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+## Requisitos
 
-## How can I edit this code?
+- Node.js 20 o superior
+- npm 10 o superior
+- MySQL 8.0 o superior
 
-There are several ways of editing your application.
+## Puesta en marcha local
 
-**Use Lovable**
+1. Copia `.env.example` como `.env`.
+2. Para desarrollo con Docker, los valores de MySQL ya coinciden con `compose.yaml`. Cambia `JWT_SECRET` y `ADMIN_*` antes de cualquier despliegue real.
+3. Crea la base y el usuario MySQL, o inicia el servicio incluido con `docker compose up -d mysql`.
+4. Instala dependencias con `npm install`.
+5. Ejecuta `npm run db:migrate` para crear y actualizar el esquema.
+6. Inicia frontend y API con `npm run dev`.
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+El frontend queda en `http://localhost:8080` y la API en `http://localhost:3001`. Vite redirige `/api`, `/uploads` y `/sitemap.xml` a la API durante el desarrollo.
 
-Changes made via Lovable will be committed automatically to this repo.
+## Variables de entorno
 
-**Use your preferred IDE**
+| Variable | Uso |
+| --- | --- |
+| `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD` | Conexión MySQL |
+| `DB_SSL` | Activa TLS validado hacia MySQL |
+| `JWT_SECRET` | Firma de la sesión administrativa |
+| `ADMIN_EMAIL`, `ADMIN_PASSWORD` | Crea el primer administrador si no existe |
+| `COOKIE_SECURE` | Debe ser `true` en producción HTTPS |
+| `PUBLIC_SITE_URL` | URL canónica usada por el sitemap |
+| `UPLOAD_DIR` | Directorio persistente de imágenes |
+| `MAX_UPLOAD_MB` | Tamaño máximo por imagen |
+| `VITE_API_URL` | Déjalo vacío en la arquitectura recomendada de mismo dominio |
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+La contraseña configurada en `ADMIN_PASSWORD` solo se usa para crear una cuenta ausente; no sobrescribe una cuenta existente. Después del primer arranque puedes retirar ambas variables `ADMIN_*`; el servidor comprobará que ya exista al menos un administrador.
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+## Producción
 
-Follow these steps:
+`npm run build` genera `dist` y `npm start` inicia una sola aplicación que sirve la API, las imágenes y la SPA. El arranque ejecuta el esquema idempotente antes de escuchar tráfico. Para Dokploy debe usarse el `Dockerfile` del repositorio, sin argumentos ni secretos durante el build.
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+En el hosting configura:
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+- MySQL 8 privado y respaldos automáticos.
+- Todas las variables del bloque anterior.
+- HTTPS y `COOKIE_SECURE=true`.
+- Un volumen persistente montado en el valor absoluto de `UPLOAD_DIR`.
+- Health check en `/api/health`.
+- Puerto interno `3001` y dominio conectado a ese puerto.
 
-# Step 3: Install the necessary dependencies.
-npm i
+## Comandos de verificación
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+```bash
+npm run lint
+npm test
+npm run build
 ```
-
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)

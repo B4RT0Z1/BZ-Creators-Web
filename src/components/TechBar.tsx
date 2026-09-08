@@ -1,5 +1,5 @@
 const techs = [
-  "React", "TypeScript", "Python", "Node.js", "OpenAI", "AWS", "Supabase", "Figma",
+  "React", "TypeScript", "Python", "Node.js", "OpenAI", "AWS", "MySQL", "Figma",
   "Next.js", "TailwindCSS", "PostgreSQL", "Docker",
 ];
 

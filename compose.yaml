@@ -1,0 +1,21 @@
+services:
+  mysql:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: bz_creators
+      MYSQL_USER: bz_creators
+      MYSQL_PASSWORD: local_bz_password
+      MYSQL_ROOT_PASSWORD: local_root_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - bz_mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-ubz_creators", "-plocal_bz_password"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  bz_mysql_data:

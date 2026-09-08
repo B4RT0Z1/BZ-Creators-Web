@@ -11,6 +11,11 @@ node_modules
 dist
 dist-ssr
 *.local
+.env
+.env.*
+!.env.example
+uploads/*
+!uploads/.gitkeep
 
 # Editor directories and files
 .vscode/*
@@ -23,8 +28,7 @@ dist-ssr
 *.sln
 *.sw?
 
-# InsForge & AI agent skills
-.insforge
+# AI agent working files
 .agent
 .agents
 .augment

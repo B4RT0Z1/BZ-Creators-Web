@@ -1,18 +1,6 @@
-import { useState, useEffect } from "react";
-import { createClient } from "@insforge/sdk";
+import { useState, useEffect, useCallback } from "react";
 import { MessageCircle, Send, User, Mail, Clock, CheckCircle, AlertCircle } from "lucide-react";
-
-const INSFORGE_URL = import.meta.env.VITE_INSFORGE_URL || "https://6w3sgde5.us-east.insforge.app";
-const INSFORGE_ANON_KEY = import.meta.env.VITE_INSFORGE_ANON_KEY || "ik_70965bdd4ef84eae1800692c1cdf68fd";
-const supabase = createClient({ baseUrl: INSFORGE_URL, anonKey: INSFORGE_ANON_KEY });
-
-interface Comment {
-  id: string;
-  author_name: string;
-  author_email: string;
-  content: string;
-  created_at: string;
-}
+import { Comment, commentsApi } from "@/lib/api";
 
 interface CommentsSectionProps {
   postId: string;
@@ -66,19 +54,20 @@ export default function CommentsSection({ postId }: CommentsSectionProps) {
   const [submitting, setSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle");
 
-  const fetchComments = async () => {
-    const { data } = await supabase.database
-      .from("comments")
-      .select("id, author_name, author_email, content, created_at")
-      .eq("post_id", postId)
-      .order("created_at", { ascending: false });
-    if (data) setComments(data as Comment[]);
-    setLoadingComments(false);
-  };
+  const fetchComments = useCallback(async () => {
+    setLoadingComments(true);
+    try {
+      setComments(await commentsApi.list(postId));
+    } catch {
+      setComments([]);
+    } finally {
+      setLoadingComments(false);
+    }
+  }, [postId]);
 
   useEffect(() => {
     if (postId) fetchComments();
-  }, [postId]);
+  }, [postId, fetchComments]);
 
   const validate = () => {
     const newErrors: typeof errors = {};
@@ -101,25 +90,21 @@ export default function CommentsSection({ postId }: CommentsSectionProps) {
     setSubmitting(true);
     setSubmitStatus("idle");
 
-    const { error } = await supabase.database.from("comments").insert([
-      {
-        post_id: postId,
+    try {
+      const comment = await commentsApi.create(postId, {
         author_name: form.name.trim(),
         author_email: form.email.trim().toLowerCase(),
         content: form.content.trim(),
-      },
-    ]);
-
-    setSubmitting(false);
-    if (error) {
-      setSubmitStatus("error");
-    } else {
+      });
+      setComments((current) => [comment, ...current]);
       setSubmitStatus("success");
       setForm({ name: "", email: "", content: "" });
       setErrors({});
-      // Refresh comments
-      setTimeout(() => fetchComments(), 500);
       setTimeout(() => setSubmitStatus("idle"), 5000);
+    } catch {
+      setSubmitStatus("error");
+    } finally {
+      setSubmitting(false);
     }
   };
 

@@ -2,8 +2,8 @@ import { motion } from "framer-motion";
 
 const tools = [
   "Codex", "Cline", "Kiro", "Trae", "Qoder", "Roo Code", "Cursor", 
-  "Claude", "Copilot", "InsForge", "BrowserAct", "Qwen", "Seedance",
-  "OpenAI", "Replicate", "Vercel", "Supabase"
+  "Claude", "Copilot", "MySQL", "BrowserAct", "Qwen", "Seedance",
+  "OpenAI", "Replicate", "Vercel", "Docker"
 ];
 
 const ToolsSection = () => {
