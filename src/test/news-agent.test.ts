@@ -22,7 +22,8 @@ function fakePool() {
       }
       if (sql.startsWith("INSERT INTO agent_drafts")) { drafts.push({ post_id: params[0] as string, source_url: params[1] as string }); return [{}]; }
       if (sql.includes("JOIN agent_drafts")) return [posts.filter((p) => p.id === params[0] && drafts.some((d) => d.post_id === p.id)).map((p) => ({ id: p.id, slug: p.slug, published: p.published }))];
-      if (sql.startsWith("UPDATE posts SET published")) { posts.find((p) => p.id === params[0])!.published = true; return [{}]; }
+      if (sql.startsWith("UPDATE posts SET published = TRUE")) { posts.find((p) => p.id === params[0])!.published = true; return [{}]; }
+      if (sql.startsWith("UPDATE posts SET published = FALSE")) { posts.find((p) => p.id === params[0])!.published = false; return [{}]; }
       if (sql.startsWith("DELETE FROM posts")) { const i = posts.findIndex((p) => p.id === params[0]); posts.splice(i, 1); drafts.splice(drafts.findIndex((d) => d.post_id === params[0]), 1); return [{}]; }
       throw new Error(`consulta inesperada: ${sql}`);
     },
@@ -92,6 +93,16 @@ describe("API del agente de noticias", () => {
     const second = (await t.call("/posts", WRITE, { ...note, source_url: "https://example.com/b" })).json.post.id as string;
     expect((await t.call(`/posts/${second}/discard`, PUBLISH, {})).status).toBe(200);
     expect(t.posts.some((p) => p.id === second)).toBe(false);
+  });
+
+  it("baja una nota publicada por el agente a borrador, solo con la clave de aprobación", async () => {
+    const t = await start();
+    const id = (await t.call("/posts", WRITE, note)).json.post.id as string;
+    expect((await t.call(`/posts/${id}/unpublish`, PUBLISH, {})).status).toBe(409);
+    await t.call(`/posts/${id}/publish`, PUBLISH, {});
+    expect((await t.call(`/posts/${id}/unpublish`, WRITE, {})).status).toBe(401);
+    expect((await t.call(`/posts/${id}/unpublish`, PUBLISH, {})).status).toBe(200);
+    expect(t.posts[0]!.published).toBe(false);
   });
 
   it("lista lo existente con su fuente para no repetir notas", async () => {

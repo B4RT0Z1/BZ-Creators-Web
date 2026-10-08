@@ -113,6 +113,20 @@ export function createNewsAgentRouter({ pool, tokens }) {
     }
   });
 
+  // Takes down a note the agent published (it goes back to being a draft); never touches notes made by a person.
+  router.post("/posts/:id/unpublish", approve, async (req, res) => {
+    try {
+      const draft = await ownDraft(req.params.id);
+      if (!draft) return res.status(404).json({ error: "No existe esa nota del agente" });
+      if (!draft.published) return res.status(409).json({ error: "Ya estaba como borrador" });
+      await pool.execute("UPDATE posts SET published = FALSE WHERE id = ?", [draft.id]);
+      return res.json({ post: { id: draft.id, slug: draft.slug, published: false } });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ error: "Error interno del servidor" });
+    }
+  });
+
   router.post("/posts/:id/discard", approve, async (req, res) => {
     try {
       const draft = await ownDraft(req.params.id);
