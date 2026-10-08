@@ -11,6 +11,7 @@ import { pool } from "./db.js";
 import { clearSession, createSession, requireAdmin } from "./auth.js";
 import { cleanArticleHtml, cleanExternalUrl, cleanText, parsePublished, slugify } from "./content.js";
 import { deleteLocalImage, uploadImage } from "./uploads.js";
+import { createNewsAgentRouter } from "./news-agent.js";
 
 const app = express();
 app.set("trust proxy", 1);
@@ -413,6 +414,8 @@ app.get("/sitemap.xml", async (_req, res) => {
   ];
   res.type("application/xml").send(`<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls.join("")}</urlset>`);
 });
+
+app.use("/api/agent", createNewsAgentRouter({ pool, tokens: { write: config.newsAgentToken, publish: config.newsAgentPublishToken } }));
 
 app.use("/uploads", express.static(config.uploadDir, { fallthrough: false, maxAge: "7d" }));
 

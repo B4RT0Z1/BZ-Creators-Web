@@ -25,6 +25,8 @@ export const config = {
   cookieSecure: readBoolean(process.env.COOKIE_SECURE, process.env.NODE_ENV === "production"),
   adminEmail: (process.env.ADMIN_EMAIL || "").trim().toLowerCase(),
   adminPassword: process.env.ADMIN_PASSWORD || "",
+  newsAgentToken: process.env.NEWS_AGENT_TOKEN || "",
+  newsAgentPublishToken: process.env.NEWS_AGENT_PUBLISH_TOKEN || "",
   uploadDir: path.resolve(projectRoot, process.env.UPLOAD_DIR || "uploads"),
   maxUploadBytes: readNumber(process.env.MAX_UPLOAD_MB, 5) * 1024 * 1024,
   projectRoot,

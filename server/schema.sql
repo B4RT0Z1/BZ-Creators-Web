@@ -71,3 +71,13 @@ CREATE TABLE IF NOT EXISTS open_source_projects (
 
 INSERT IGNORE INTO categories (id, name, slug)
 VALUES ('00000000-0000-4000-8000-000000000001', 'General', 'general');
+
+-- Borradores creados por el agente de noticias: de dónde salió cada nota (también marca cuáles puede publicar o descartar el agente).
+CREATE TABLE IF NOT EXISTS agent_drafts (
+  post_id CHAR(36) NOT NULL,
+  source_url VARCHAR(2048) NOT NULL,
+  created_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  PRIMARY KEY (post_id),
+  KEY agent_drafts_source_idx (source_url(191)),
+  CONSTRAINT agent_drafts_post_fk FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
