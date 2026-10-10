@@ -18,6 +18,6 @@ for (const page of legalPages) {
   for (const section of page.sections) review += `### ${section.title}\n\n${plain(section.html)}\n\n`;
 }
 const pending = [...new Set(legalPages.flatMap(page => page.sections.flatMap(section => section.html.match(/\[COMPLETAR:[^\]]+\]/g) || [])))];
-review += `## Pendientes visibles\n\n${pending.map(p => `- ${p}`).join("\n")}\n`;
+review += `## Pendientes visibles\n\n${pending.length ? pending.map(p => `- ${p}`).join("\n") : "No quedan campos [COMPLETAR] en los textos. La verificación operativa y los límites de la auditoría se documentan en LEGAL-AUDIT.md."}\n`;
 await fs.writeFile("docs/LEGAL-TEXTS.md", review);
 console.log(`Exported 4 texts; ${pending.length} pending verification markers.`);

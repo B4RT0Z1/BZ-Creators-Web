@@ -7,7 +7,6 @@ import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import Footer from "./components/Footer";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
-import CookieConsent from "./components/CookieConsent";
 import { legalPages } from "../shared/legal-content.js";
 const LegalPage = lazy(() => import("./pages/LegalPage"));
 const AdminLogin = lazy(() => import("./pages/AdminLogin"));
@@ -48,7 +47,6 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Suspense fallback={<main className="lab-shell py-32" role="status">Cargando el laboratorio…</main>}><AppRoutes /></Suspense>
-        <CookieConsent />
         <AdminFooter />
       </BrowserRouter>
     </TooltipProvider>

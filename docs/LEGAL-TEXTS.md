@@ -44,13 +44,12 @@ La autorización de la cuenta propia se gestiona con Meta; los datos de otras cu
 
 - **Contabo:** alojamiento del servidor y de la base de datos MySQL en la Unión Europea, según la ubicación indicada por el responsable. La región declarada para este alojamiento es la UE.
 - **Cloudflare:** el sitio pasa por su infraestructura de entrega y protección; puede recibir IP, URL solicitada y datos técnicos. Su red global puede procesar solicitudes fuera de Argentina y de la UE, conforme a las condiciones del proveedor.
-- **Google:** el contenedor existente de Google Tag Manager sólo se solicita si aceptás las etiquetas opcionales. El contenedor público auditado no tiene etiquetas activas; no se detectó Google Analytics ni un píxel de publicidad. No se cargan Google Fonts desde Google: las fuentes se sirven desde este sitio. Ver [política de cookies](/cookies).
 - **Meta:** proveedor de Instagram/Facebook para la integración de análisis y de WhatsApp si elegís contactarnos por ese medio. Estos servicios también tienen sus propias políticas.
 - **OpenRouter y DeepSeek:** el agente de Instagram envía un resumen de métricas, fragmentos de textos públicos y cuentas analizadas para generar informes mediante el modelo DeepSeek configurado. El código no envía el token de Meta en ese resumen. Si se cambia el proveedor o la finalidad, corresponde revisar esta política y los permisos aplicables.
 - **Telegram:** si se configura el envío, recibe los informes y el identificador del chat elegido por el titular para entregárselos. Esto no autoriza a escribir a otras personas por Instagram.
 - **Contenido externo:** las notas y proyectos pueden mostrar imágenes alojadas en otros dominios. Al cargarlas, su proveedor recibe una solicitud técnica. Los enlaces a GitHub, productos y noticias llevan a sitios independientes; no se cargan sus páginas o embeds por el solo hecho de mostrar el enlace.
 
-No vendemos datos personales. Sólo se comunican a quienes necesitan intervenir para prestar el servicio, atender tu pedido o cumplir una obligación legal. El alojamiento y los servicios externos pueden implicar tratamiento fuera de Argentina. **[COMPLETAR: contratos y garantías aplicables a transferencias internacionales; no afirmar que están verificados]**.
+No vendemos datos personales. Sólo se comunican a quienes necesitan intervenir para prestar el servicio, atender tu pedido o cumplir una obligación legal. El alojamiento y los servicios externos pueden implicar tratamiento fuera de Argentina. Los Estados miembros de la Unión Europea, donde se aloja nuestro servidor, están reconocidos por la normativa argentina como destinos con un nivel adecuado de protección. Las redes globales y los proveedores de análisis pueden tratar datos en otros países. Para destinos sin ese reconocimiento, corresponde aplicar las garantías o excepciones exigidas por la Ley 25.326 y, cuando sea aplicable, el RGPD. Las condiciones de tratamiento dependen del servicio utilizado; no afirmamos que todos los proveedores procesen datos exclusivamente en la UE. Podés pedir información sobre los destinatarios y el alcance de una transferencia escribiendo a nuestro correo de privacidad. Consultá también la [información de la AAIP sobre transferencias internacionales](https://www.argentina.gob.ar/transferencias-internacionales) y las políticas de [Cloudflare](https://www.cloudflare.com/privacypolicy/), [OpenRouter](https://openrouter.ai/privacy) y [Telegram](https://telegram.org/privacy).
 
 ### Cuánto tiempo se conservan
 
@@ -58,9 +57,9 @@ La cookie de administración tiene una duración máxima de 12 horas; el cierre 
 
 Los comentarios no tienen una eliminación automática por antigüedad en el código: permanecen hasta su eliminación manual, una solicitud procedente o la eliminación de la nota, que borra sus comentarios asociados. Los comentarios se conservan hasta que su autor solicite el borrado, se retiren por moderación o se elimine la nota. Las consultas de contacto se conservan hasta 6 meses desde la última interacción, salvo una obligación legal o relación contractual que justifique una conservación diferente. Las cuentas de administración permanecen mientras se necesiten; las imágenes se conservan mientras sigan asociadas al contenido, y el sistema elimina la imagen local al reemplazarla o borrar su publicación.
 
-El responsable definió un máximo de **6 meses para logs, copias de seguridad y datos obtenidos de Instagram/Meta**, salvo una obligación legal o un reclamo que justifique conservar un conjunto limitado por más tiempo. El repositorio del sitio no configura la rotación del hosting ni contiene la integración de Meta. **[COMPLETAR: verificar y documentar el mecanismo efectivo de borrado/rotación a 6 meses en hosting, backups e integración de Meta]**. Los datos eliminados de los sistemas activos pueden permanecer en backups hasta su vencimiento; no deben reutilizarse y, si se restaura una copia, debe repetirse la eliminación.
+El responsable definió un máximo de **6 meses para logs, copias de seguridad y datos obtenidos de Instagram/Meta**, salvo una obligación legal o un reclamo que justifique conservar un conjunto limitado por más tiempo. La conservación del servidor y sus copias de seguridad se gestiona fuera de la aplicación del sitio, bajo responsabilidad del titular. La revisión del vencimiento y la atención de solicitudes de eliminación incluyen los registros y reportes de la integración de Meta; el sitio no ofrece un botón de borrado automático para esa integración. Los datos eliminados de los sistemas activos pueden permanecer en backups hasta su vencimiento; no deben reutilizarse y, si se restaura una copia, debe repetirse la eliminación.
 
-La elección de etiquetas opcionales se recuerda localmente durante 6 meses. Después se vuelve a consultar. Los cambios en proveedores o finalidades requieren revisar la información y, cuando corresponda, solicitar un nuevo consentimiento.
+Los cambios en proveedores o finalidades requieren revisar la información y, cuando corresponda, solicitar un nuevo consentimiento.
 
 ### Tus derechos y cómo ejercerlos
 
@@ -98,7 +97,7 @@ Este trámite no elimina tu cuenta de Facebook/Instagram, tus publicaciones en M
 
 Después de verificar el pedido, eliminamos los comentarios identificados —nombre, correo, texto y registro asociado— y los datos personales de la integración de Facebook/Instagram que estén bajo nuestro control, incluidas copias activas de métricas o reportes vinculables a tu cuenta. Si corresponde una conexión autorizada, retiramos sus credenciales almacenadas e impedimos su reutilización. Los datos estadísticos irreversiblemente anónimos no permiten identificarte.
 
-Las copias de seguridad tienen un máximo definido de 6 meses y quedan fuera del uso habitual hasta su vencimiento; si se restauran, debe reaplicarse la eliminación. **[COMPLETAR: verificar rotación real de backups y borrado de datos de Meta]**. Si una obligación legal o un reclamo exige conservar algo, te explicamos qué dato, por qué y por cuánto tiempo, restringiendo su uso. No podemos borrar copias realizadas por terceros fuera de nuestro control.
+Las copias de seguridad tienen un máximo definido de 6 meses y quedan fuera del uso habitual hasta su vencimiento; si se restauran, debe reaplicarse la eliminación. La solicitud se atiende con intervención del responsable e incluye las copias activas y los reportes identificables de la integración. Al confirmar la eliminación, informamos si queda alguna copia de seguridad pendiente de vencer. Si una obligación legal o un reclamo exige conservar algo, te explicamos qué dato, por qué y por cuánto tiempo, restringiendo su uso. No podemos borrar copias realizadas por terceros fuera de nuestro control.
 
 ### 4. Plazos y confirmación
 
@@ -164,40 +163,37 @@ Se aplica la ley de la República Argentina. Para los asuntos en que sea legalme
 
 URL prevista: https://bzcreators.com.ar/cookies
 
-Descripción SEO: Cookies reales de BZ Creators, sesión del administrador y control de las etiquetas opcionales de Google Tag Manager.
+Descripción SEO: Cookies esenciales de BZ Creators: sesión de administración y protección de Cloudflare, sin cookies de seguimiento.
 
-La sesión de administración es esencial. Las etiquetas opcionales se cargan únicamente si las aceptás.
+Sólo usamos cookies esenciales para administrar y proteger el sitio. No usamos cookies de seguimiento.
 
 ### Cookies y almacenamiento local
 
 | Nombre y tipo | Finalidad | Duración | Esencial |
 | --- | --- | --- | --- |
 | bz_admin_sessionCookie propia | Autenticar al administrador. Token firmado con identificador, rol y correo; HttpOnly, SameSite=Lax, ruta /. Secure en la configuración de producción. | Máximo 12 horas; se elimina al cerrar sesión. El token puede vencer antes según la configuración. | Sí, sólo para administración. |
-| bz_cookie_choice_v1localStorage, no es una cookie | Recordar aceptación o rechazo de etiquetas opcionales y la fecha de elección. No identifica a la persona ni se envía a nuestro servidor. | 6 meses. Al vencer, se pide una nueva elección. | Sí, para respetar tu preferencia. |
+| cf_clearanceCookie de Cloudflare; sólo si se supera un desafío de seguridad | Acreditar la comprobación de seguridad y evitar repetirla durante su vigencia. No se observó en la navegación pública ordinaria auditada. | 30 minutos según la configuración del sitio, con los márgenes técnicos que aplica Cloudflare. Puede renovarse al superar otro desafío. | Sí, cuando la protección requiere un desafío. |
 
-La navegación pública y los comentarios no requieren la cookie de administración. El componente de interfaz de barra lateral incluido como código sin uso no genera cookies en las rutas actuales.
+La navegación pública y los comentarios no requieren la cookie de administración.
 
-### Google Tag Manager y terceros
+### Protección y recursos externos
 
-El sitio tenía integrado Google Tag Manager, contenedor **GTM-NZJTZ9JT**. Lo bloqueamos hasta que elijas aceptar. Rechazar mantiene el contenedor sin cargar y permite seguir usando el sitio; no enviamos señales analíticas a Google antes de aceptar.
+El sitio no carga Google Tag Manager, Google Analytics, píxeles de publicidad ni otros scripts de seguimiento. Tampoco utiliza cookies analíticas o publicitarias. Las fuentes Inter y Space Grotesk se sirven localmente, sin solicitudes a Google Fonts.
 
-En la auditoría del contenedor público, sus listas de etiquetas, reglas y disparadores estaban vacías. Por eso no se detectaron cookies de Analytics, anuncios o píxeles y no se inventan nombres como “_ga” en esta tabla. Google Tag Manager no equivale por sí solo a Google Analytics. Tras aceptar, Google recibe la solicitud del contenedor y los datos técnicos necesarios para responderla.
+Cloudflare participa en la entrega y protección del sitio. La configuración consultada tiene revisión de integridad del navegador activada y una vigencia de desafíos de 30 minutos. Bot Fight Mode y las detecciones JavaScript de Bot Management están desactivados. No se observó una cookie de Cloudflare en la respuesta pública ordinaria; si su protección presenta un desafío y lo superás, puede emitir cf_clearance para acreditar la comprobación de seguridad. Consultá la [información de Cloudflare sobre sus cookies de seguridad](https://developers.cloudflare.com/fundamentals/reference/policies-compliances/cloudflare-cookies/).
 
-No incorporamos nuevos servicios de seguimiento. Antes de habilitar etiquetas, hay que identificar sus cookies, finalidad, destinatarios y duración, actualizar este inventario y solicitar un nuevo consentimiento si cambia el alcance. Las fuentes Inter y Space Grotesk se sirven localmente, sin solicitudes a Google Fonts.
+Las imágenes externas de notas pueden generar solicitudes técnicas a su alojamiento. Los enlaces a redes sociales abren servicios independientes cuando elegís visitarlos; sus cookies y políticas se aplican en esos servicios.
 
-Cloudflare participa en la entrega del sitio. No se observó una cookie de Cloudflare en la respuesta pública auditada; las funciones de protección pueden variar. **[COMPLETAR: confirmar las funciones de Cloudflare y si generan cookies en desafíos u otras rutas]**. Las imágenes externas de notas pueden generar solicitudes técnicas a su alojamiento; no son scripts de seguimiento instalados por el sitio.
+### Cómo administrar estas cookies
 
-### Cómo cambiar tu elección
+No mostramos un banner de consentimiento porque las cookies descritas son esenciales para la sesión administrativa o la seguridad, y no cargamos etiquetas opcionales ni tecnologías de seguimiento.
 
-El aviso permite **Aceptar etiquetas opcionales** o **Rechazar etiquetas opcionales** con opciones del mismo tamaño y visibilidad. Podés volver a abrirlo desde “Preferencias de cookies” en el pie de cualquier página. Si revocás una aceptación, recargamos el documento para detener las etiquetas ya cargadas; la preferencia de rechazo queda guardada. Las cookies esenciales de administración no dependen de ese permiso.
+Podés bloquear o borrar cookies desde las preferencias de tu navegador. Si borrás bz_admin_session, se cierra tu sesión administrativa. Bloquear las cookies de seguridad puede hacer que Cloudflare repita una comprobación o impida completar un desafío. La navegación pública ordinaria y los comentarios no requieren la cookie de administración.
 
-Podés borrar el almacenamiento local y las cookies en tu navegador. Esto olvida la elección y, si borrás la sesión, cierra el acceso administrativo. Si el navegador impide guardar preferencias, las respetamos durante la visita actual y preguntamos de nuevo al volver. Con JavaScript desactivado no se carga el contenedor opcional.
+Si incorporamos funciones no esenciales, actualizaremos esta política y pediremos consentimiento antes de cargarlas cuando corresponda.
 
 Consultas: [bautistazanelli@bzcreators.com.ar](mailto:bautistazanelli@bzcreators.com.ar). Más información en [Política de privacidad](/privacidad).
 
 ## Pendientes visibles
 
-- [COMPLETAR: contratos y garantías aplicables a transferencias internacionales; no afirmar que están verificados]
-- [COMPLETAR: verificar y documentar el mecanismo efectivo de borrado/rotación a 6 meses en hosting, backups e integración de Meta]
-- [COMPLETAR: verificar rotación real de backups y borrado de datos de Meta]
-- [COMPLETAR: confirmar las funciones de Cloudflare y si generan cookies en desafíos u otras rutas]
+No quedan campos [COMPLETAR] en los textos. La verificación operativa y los límites de la auditoría se documentan en LEGAL-AUDIT.md.
