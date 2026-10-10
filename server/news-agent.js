@@ -1,7 +1,8 @@
 import { createHash, randomUUID, timingSafeEqual } from "node:crypto";
 import express from "express";
+import { editorialFields, articleRevision } from "./news-editorial.js";
 import rateLimit from "express-rate-limit";
-import { cleanArticleHtml, cleanExternalUrl, cleanText, slugify } from "./content.js";
+import { cleanExternalUrl, slugify } from "./content.js";
 
 /**
  * API estrecha para el agente de noticias (Dina). No usa la sesión de administrador:
@@ -13,7 +14,6 @@ import { cleanArticleHtml, cleanExternalUrl, cleanText, slugify } from "./conten
 
 const MIN_TOKEN = 32;
 const DEFAULT_CATEGORY_ID = "00000000-0000-4000-8000-000000000001";
-const MAX_CONTENT = 200_000;
 
 const digest = (value) => createHash("sha256").update(String(value)).digest();
 const sameToken = (given, expected) => timingSafeEqual(digest(given), digest(expected));
@@ -30,8 +30,7 @@ const requireToken = (expected) => (req, res, next) => {
   return next();
 };
 
-const hostOf = (url) => new URL(url).hostname.replace(/^www\./, "");
-const escapeHtml = (value) => String(value).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+
 
 export function createNewsAgentRouter({ pool, tokens }) {
   const router = express.Router();
@@ -54,17 +53,13 @@ export function createNewsAgentRouter({ pool, tokens }) {
     }
   });
 
-  // Crea SIEMPRE un borrador. La fuente es obligatoria y queda citada al pie de la nota.
+  // Crea SIEMPRE un borrador. La fuente es obligatoria y se conserva solo en el registro interno.
   router.post("/posts", write, async (req, res) => {
-    const title = cleanText(req.body?.title, 255);
     const sourceUrl = cleanExternalUrl(req.body?.source_url, { required: true });
-    let content = cleanArticleHtml(String(req.body?.content ?? "").slice(0, MAX_CONTENT));
-    if (!title || !content) return res.status(400).json({ error: "Título y contenido son obligatorios" });
-    if (!sourceUrl) return res.status(400).json({ error: "Falta la fuente (source_url con http o https)" });
-    if (!content.includes(sourceUrl)) {
-      content += `<p class="source">Fuente: <a href="${escapeHtml(sourceUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(hostOf(sourceUrl))}</a></p>`;
-    }
-    const imageUrl = req.body?.image_url ? cleanExternalUrl(req.body.image_url) : null;
+    if (!sourceUrl || new URL(sourceUrl).username || new URL(sourceUrl).password) return res.status(400).json({ error: "Falta una fuente válida para el registro interno" });
+    let fields;
+    try { fields = editorialFields(req.body ?? {}); } catch (error) { return res.status(400).json({ error: error.message }); }
+    const { title, content, image_url: imageUrl } = fields;
     const id = randomUUID();
     const baseSlug = slugify(req.body?.slug || title) || `nota-${id.slice(0, 8)}`;
     try {
@@ -76,7 +71,7 @@ export function createNewsAgentRouter({ pool, tokens }) {
           await pool.execute(
             `INSERT INTO posts (id, title, slug, content, image_url, category_id, published, meta_description, keywords)
              VALUES (?, ?, ?, ?, ?, ?, FALSE, ?, ?)`,
-            [id, title, slug, content, imageUrl, DEFAULT_CATEGORY_ID, cleanText(req.body?.meta_description, 320) || null, cleanText(req.body?.keywords, 500) || null],
+            [id, title, slug, content, imageUrl, DEFAULT_CATEGORY_ID, fields.meta_description, fields.keywords],
           );
           break;
         } catch (error) {
@@ -94,17 +89,49 @@ export function createNewsAgentRouter({ pool, tokens }) {
 
   const ownDraft = async (id) => {
     const [rows] = await pool.execute(
-      `SELECT p.id, p.slug, p.published FROM posts p JOIN agent_drafts d ON d.post_id = p.id WHERE p.id = ? LIMIT 1`,
+      `SELECT p.id, p.slug, p.published, p.title, p.content, p.image_url, p.meta_description, p.keywords FROM posts p JOIN agent_drafts d ON d.post_id = p.id WHERE p.id = ? LIMIT 1`,
       [id],
     );
     return rows[0];
   };
+
+  router.get("/posts/:id", approve, async (req, res) => {
+    try {
+      const post = await ownDraft(req.params.id);
+      if (!post) return res.status(404).json({ error: "No existe esa nota del agente" });
+      return res.json({ post: { ...post, published: Boolean(post.published), revision: articleRevision(post) } });
+    } catch (error) { console.error(error); return res.status(500).json({ error: "Error interno del servidor" }); }
+  });
+  router.post("/posts/:id/update", approve, async (req, res) => {
+    try {
+      const post = await ownDraft(req.params.id);
+      if (!post) return res.status(404).json({ error: "No existe esa nota del agente" });
+      if (req.body?.expectedRevision !== articleRevision(post)) return res.status(409).json({ error: "La nota cambió: volvé a leerla antes de editar" });
+      if (!req.body || Object.keys(req.body).some(key => !["title", "content", "image_url", "meta_description", "keywords", "expectedRevision"].includes(key))) return res.status(400).json({ error: "El cambio contiene campos no admitidos" });
+      let fields;
+      try { fields = editorialFields({ ...post, ...req.body }); } catch (error) { return res.status(400).json({ error: error.message }); }
+      const [changed] = await pool.execute("UPDATE posts p JOIN agent_drafts d ON d.post_id = p.id SET p.title = ?, p.content = ?, p.image_url = ?, p.meta_description = ?, p.keywords = ? WHERE p.id = ? AND BINARY p.title <=> BINARY ? AND BINARY p.content <=> BINARY ? AND BINARY p.image_url <=> BINARY ? AND BINARY p.meta_description <=> BINARY ? AND BINARY p.keywords <=> BINARY ? AND p.published <=> ?", [fields.title, fields.content, fields.image_url, fields.meta_description, fields.keywords, post.id, post.title, post.content, post.image_url, post.meta_description, post.keywords, post.published]);
+      if (changed.affectedRows !== 1) return res.status(409).json({ error: "La nota cambió: volvé a leerla antes de editar" });
+      return res.json({ post: { id: post.id, slug: post.slug, published: Boolean(post.published), ...fields } });
+    } catch (error) { console.error(error); return res.status(500).json({ error: "Error interno del servidor" }); }
+  });
+  router.post("/posts/:id/delete", approve, async (req, res) => {
+    try {
+      const post = await ownDraft(req.params.id);
+      if (!post) return res.status(404).json({ error: "No existe esa nota del agente" });
+      if (req.body?.expectedRevision !== articleRevision(post)) return res.status(409).json({ error: "La nota cambió: pedí una nueva confirmación antes de borrar" });
+      const [deleted] = await pool.execute("DELETE p FROM posts p JOIN agent_drafts d ON d.post_id = p.id WHERE p.id = ? AND BINARY p.title <=> BINARY ? AND BINARY p.content <=> BINARY ? AND BINARY p.image_url <=> BINARY ? AND BINARY p.meta_description <=> BINARY ? AND BINARY p.keywords <=> BINARY ? AND p.published <=> ?", [post.id, post.title, post.content, post.image_url, post.meta_description, post.keywords, post.published]);
+      if (deleted.affectedRows !== 1) return res.status(409).json({ error: "La nota cambió: pedí otra confirmación" });
+      return res.json({ deleted: true });
+    } catch (error) { console.error(error); return res.status(500).json({ error: "Error interno del servidor" }); }
+  });
 
   router.post("/posts/:id/publish", approve, async (req, res) => {
     try {
       const draft = await ownDraft(req.params.id);
       if (!draft) return res.status(404).json({ error: "No existe ese borrador del agente" });
       if (draft.published) return res.status(409).json({ error: "Ya estaba publicada" });
+      try { editorialFields(draft); } catch (error) { return res.status(400).json({ error: "Antes de publicar: " + error.message }); }
       await pool.execute("UPDATE posts SET published = TRUE WHERE id = ?", [draft.id]);
       return res.json({ post: { id: draft.id, slug: draft.slug, published: true } });
     } catch (error) {

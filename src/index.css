@@ -274,3 +274,31 @@ html { scroll-behavior: smooth; scroll-padding-top: 100px; }
 .lab-brand strong { color: #eeedf0; font: 500 16px 'Space Grotesk', sans-serif; letter-spacing: -.4px; }
 .lab-brand small { font: 8px ui-monospace,monospace; letter-spacing: 1.6px; }
 @media (max-width: 640px) { .lab-brand { gap: 3px; }.lab-brand img { width: 40px; height: 44px; }.lab-brand strong { font-size: 13px; }.lab-brand small { font-size: 6px; letter-spacing: 1.2px; } }
+
+/* BZ Creators editorial layout: no dependency on unconfigured typography utilities. */
+.article-main { padding: 110px 24px 72px; }
+.bz-article { max-width: 900px; margin: 0 auto; }
+.article-kicker { color: #b298e9; font: 10px ui-monospace,monospace; letter-spacing: .15em; margin-bottom: 22px; }
+.article-back { color: #b298e9; display: inline-block; margin-bottom: 32px; }
+.bz-article h1 { font-family: 'Space Grotesk',sans-serif; font-size: clamp(30px,4vw,54px); font-weight: 500; line-height: 1.12; letter-spacing: -.035em; overflow-wrap: anywhere; }
+.article-description { color: #b7b0c3; line-height: 1.8; margin: 24px 0; }
+.article-cover { margin: 0 0 32px; aspect-ratio: 16/9; border-radius: 16px; overflow: hidden; background: #16121e; border: 1px solid #ffffff12; }
+.article-cover img { width: 100%; height: 100%; object-fit: cover; }
+.article-cover-fallback { display: flex; flex-direction: column; justify-content: center; height: 100%; padding: clamp(20px,4vw,48px); background: linear-gradient(130deg,#29193a,#15121c 70%); gap: 18px; }
+.article-cover-fallback span { font-size: 11px; letter-spacing: .15em; color: #c4a5ec; }
+.article-cover-fallback strong { font-family: 'Space Grotesk',sans-serif; font-size: clamp(18px,3vw,36px); font-weight: 500; line-height: 1.2; }
+.article-cover-fallback small { color: #a79aae; font: 9px ui-monospace,monospace; letter-spacing: .08em; }
+.bz-article-content { color: #d9d4df; font-size: 17px; line-height: 1.85; overflow-wrap: anywhere; }
+.bz-article-content h2 { color: #f2eff6; font-family: 'Space Grotesk',sans-serif; font-size: clamp(23px,3vw,30px); font-weight: 500; line-height: 1.3; letter-spacing: -.02em; margin: 40px 0 16px; }
+.bz-article-content h3 { font-size: 21px; font-weight: 600; margin: 28px 0 12px; }
+.bz-article-content p { margin: 0 0 22px; }
+.bz-article-content ul,.bz-article-content ol { padding-left: 24px; margin: 20px 0; }
+.bz-article-content ul { list-style: disc; }.bz-article-content ol { list-style: decimal; }.bz-article-content li { padding-left: 5px; margin: 9px 0; }
+.bz-article-content a { color: #c4a5ec; text-decoration: underline; text-underline-offset: 4px; }
+.bz-article-content blockquote { border-left: 2px solid #a855f7; padding: 12px 24px; margin: 28px 0; color: #c2b7d0; background: #a855f708; }
+.bz-article-content img { max-width: 100%; height: auto; border-radius: 12px; }.bz-article-content pre { overflow-x: auto; padding: 20px; background: #ffffff06; border-radius: 12px; }
+.bz-article-content .agent-signature { border-top: 1px solid #ffffff12; padding-top: 24px; margin-top: 36px; color: #b298e9; font-size: 13px; font-weight: 600; }
+@media (max-width:640px) { .bz-article-content { font-size:16px; }.article-main { padding:90px 20px 48px; } }
+
+/* Keep the card cover flush with its card; article pages retain generous spacing. */
+a.group > .article-cover { margin-bottom: 0; border: 0; border-radius: 0; }

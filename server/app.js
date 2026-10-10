@@ -1,6 +1,8 @@
 import fs from "node:fs";
 import { legalPages, LEGAL_UPDATED } from "../shared/legal-content.js";
 import { renderLegalPage } from "./legal-page.js";
+import { editorialContent, DINA_SIGNATURE } from "./news-editorial.js";
+import { renderArticlePage } from "./article-page.js";
 import path from "node:path";
 import { randomUUID } from "node:crypto";
 import bcrypt from "bcryptjs";
@@ -40,11 +42,12 @@ const commentLimiter = rateLimit({
 
 const postSelect = `
   SELECT id, title, slug, content, image_url, category_id, published,
-         meta_description, keywords, created_at, updated_at
+         meta_description, keywords, created_at, updated_at,
+         EXISTS (SELECT 1 FROM agent_drafts d WHERE d.post_id = posts.id) AS agent_created
   FROM posts
 `;
 
-const mapPost = (post) => ({ ...post, published: Boolean(post.published) });
+const mapPost = ({ agent_created, ...post }) => ({ ...post, published: Boolean(post.published), ...(agent_created ? { content: editorialContent(post.content), author_name: DINA_SIGNATURE } : {}) });
 
 const openSourceSelect = `
   SELECT id, name, slug, summary, description, github_url, website_url, image_url,
@@ -434,6 +437,14 @@ if (fs.existsSync(distDir)) {
       } catch (error) { next(error); }
     });
   }
+  app.get("/blog/:slug", async (req, res, next) => {
+    try {
+      const [rows] = await pool.execute(postSelect + " WHERE slug = ? AND published = TRUE LIMIT 1", [req.params.slug]);
+      if (!rows.length) { res.status(404).type("html").send('<!doctype html><html lang="es"><head><meta name="robots" content="noindex"><title>Nota no encontrada | BZ Creators</title></head><body><a href="/blog">Volver a la bitácora</a></body></html>'); return; }
+      const template = await fs.promises.readFile(path.join(distDir, "index.html"), "utf8");
+      res.type("html").send(renderArticlePage(template, mapPost(rows[0]), config.publicSiteUrl));
+    } catch (error) { next(error); }
+  });
   app.use(express.static(distDir, { index: false }));
   app.use((req, res, next) => {
     if (req.method !== "GET") return next();

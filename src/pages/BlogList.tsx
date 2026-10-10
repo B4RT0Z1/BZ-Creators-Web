@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { ArticleCover } from "@/components/ArticleCover";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { assetUrl, Post, postsApi } from "@/lib/api";
+import { Post, postsApi } from "@/lib/api";
 
 const textExcerpt = (html: string) => {
   const container = document.createElement("div");
@@ -42,13 +43,7 @@ export default function BlogList() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {posts.map((post) => (
               <Link to={`/blog/${post.slug}`} key={post.id} className="bg-card rounded-2xl shadow-sm hover:shadow-md transition-shadow overflow-hidden border border-border flex flex-col group">
-                <div className="h-48 bg-muted overflow-hidden relative">
-                  {post.image_url ? (
-                    <img src={assetUrl(post.image_url)} alt={post.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-muted-foreground">Sin Imagen</div>
-                  )}
-                </div>
+                <ArticleCover key={post.image_url} image={post.image_url} title={post.title}/>
                 <div className="p-6 flex-1 flex flex-col">
                   <span className="text-sm text-violet-400 font-medium mb-2">{new Date(post.created_at).toLocaleDateString()}</span>
                   <h2 className="text-xl font-bold text-foreground mb-2 group-hover:text-violet-400 transition-colors line-clamp-2">{post.title}</h2>

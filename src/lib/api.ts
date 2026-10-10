@@ -3,6 +3,7 @@ const API_ORIGIN = (import.meta.env.VITE_API_URL || "").replace(/\/$/, "");
 export interface Post {
   id: string;
   title: string;
+  author_name?: string;
   slug: string;
   content: string;
   image_url: string | null;
