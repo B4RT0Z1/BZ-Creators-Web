@@ -283,7 +283,9 @@ html { scroll-behavior: smooth; scroll-padding-top: 100px; }
 .bz-article h1 { font-family: 'Space Grotesk',sans-serif; font-size: clamp(30px,4vw,54px); font-weight: 500; line-height: 1.12; letter-spacing: -.035em; overflow-wrap: anywhere; }
 .article-description { color: #b7b0c3; line-height: 1.8; margin: 24px 0; }
 .article-cover { margin: 0 0 32px; aspect-ratio: 16/9; border-radius: 16px; overflow: hidden; background: #16121e; border: 1px solid #ffffff12; }
-.article-cover img { width: 100%; height: 100%; object-fit: cover; }
+.article-cover img { display:block; width: 100%; height: 100%; object-fit: contain; }
+.bz-article .article-cover.has-image { aspect-ratio:auto; }
+.bz-article .article-cover.has-image img { height:auto; }
 .article-cover-fallback { display: flex; flex-direction: column; justify-content: center; height: 100%; padding: clamp(20px,4vw,48px); background: linear-gradient(130deg,#29193a,#15121c 70%); gap: 18px; }
 .article-cover-fallback span { font-size: 11px; letter-spacing: .15em; color: #c4a5ec; }
 .article-cover-fallback strong { font-family: 'Space Grotesk',sans-serif; font-size: clamp(18px,3vw,36px); font-weight: 500; line-height: 1.2; }
@@ -302,3 +304,29 @@ html { scroll-behavior: smooth; scroll-padding-top: 100px; }
 
 /* Keep the card cover flush with its card; article pages retain generous spacing. */
 a.group > .article-cover { margin-bottom: 0; border: 0; border-radius: 0; }
+
+.bz-article-content figure { margin:32px 0; padding:0; }
+.bz-article-content figure img { display:block; width:100%; height:auto; object-fit:contain; border:1px solid #ffffff12; }
+.bz-article-content figcaption { margin-top:10px; color:#aca2b8; font-size:13px; line-height:1.6; }
+.bz-article-content table { display:block; max-width:100%; overflow-x:auto; margin:28px 0; border-collapse:collapse; font-size:15px; }
+.bz-article-content th,.bz-article-content td { padding:12px 16px; text-align:left; border:1px solid #ffffff14; vertical-align:top; }
+.bz-article-content th { background:#a855f712; color:#eee6f6; }
+
+/* Native editorial visuals: factual metrics, explainers and lightweight charts. */
+.bz-article-content .news-takeaway { margin:28px 0; padding:22px 24px; border:1px solid #a855f738; border-left:3px solid #a855f7; border-radius:12px; background:#a855f709; }
+.bz-article-content .news-takeaway>strong { display:block; margin-bottom:10px; color:#d8b8f6; }
+.bz-article-content .news-takeaway p:last-child { margin-bottom:0; }
+.bz-article-content .news-metrics { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr)); gap:12px; margin:28px 0; }
+.bz-article-content .news-metrics>div { padding:20px; border:1px solid #ffffff18; border-radius:12px; background:#ffffff04; }
+.bz-article-content .news-metrics dt { color:#b7b0c3; font-size:13px; line-height:1.5; }
+.bz-article-content .news-metrics dd { margin:10px 0 0; font-size:clamp(22px,4vw,32px); line-height:1.25; color:#eee3ff; font-weight:600; }
+.bz-article-content .news-process { padding:20px 20px 20px 44px; border:1px solid #ffffff16; border-radius:12px; background:#ffffff03; }
+.bz-article-content .news-process li::marker { color:#c4a5ec; font-weight:600; }
+.bz-article-content .news-chart { padding:22px; border:1px solid #ffffff18; border-radius:12px; background:#ffffff03; }
+.bz-article-content .news-chart figcaption { margin:0 0 18px; color:#d9d4df; font-size:15px; }
+.bz-article-content .news-chart p { margin:12px 0; font-size:14px; }
+.bz-article-content .news-chart meter { display:block; width:100%; height:20px; margin-top:8px; accent-color:#a855f7; }
+.bz-article-content .news-chart meter::-webkit-meter-bar { background:#ffffff0a; border:0; border-radius:5px; }
+.bz-article-content .news-chart meter::-webkit-meter-optimum-value { background:#a855f7; border-radius:5px; }
+.bz-article-content .news-chart meter::-moz-meter-bar { background:#a855f7; }
+.bz-article-content th { white-space:nowrap; }

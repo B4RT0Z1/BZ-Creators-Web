@@ -12,11 +12,11 @@ export const slugify = (value) =>
     .slice(0, 240);
 
 export const cleanArticleHtml = (value) => sanitizeHtml(String(value ?? ""), {
-  allowedTags: sanitizeHtml.defaults.allowedTags.concat(["img", "h1", "h2", "span"]),
+  allowedTags: sanitizeHtml.defaults.allowedTags.concat(["img", "h1", "h2", "span", "meter"]),
   allowedAttributes: {
     ...sanitizeHtml.defaults.allowedAttributes,
     a: ["href", "name", "target", "rel"],
-    img: ["src", "alt", "title", "width", "height"],
+    img: ["src", "alt", "title", "width", "height"], meter: ["min", "max", "value"],
     "*": ["class"],
   },
   allowedSchemes: ["http", "https", "mailto"],
