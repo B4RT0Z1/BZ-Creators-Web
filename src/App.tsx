@@ -3,9 +3,13 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import Footer from "./components/Footer";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
+import CookieConsent from "./components/CookieConsent";
+import { legalPages } from "../shared/legal-content.js";
+const LegalPage = lazy(() => import("./pages/LegalPage"));
 const AdminLogin = lazy(() => import("./pages/AdminLogin"));
 const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
 const BlogList = lazy(() => import("./pages/BlogList"));
@@ -14,15 +18,18 @@ const Team = lazy(() => import("./pages/Team"));
 const OpenSource = lazy(() => import("./pages/OpenSource"));
 
 const queryClient = new QueryClient();
+const AdminFooter = () => useLocation().pathname.startsWith("/admin") ? <Footer /> : null;
 
 const isOpenSourceHost = window.location.hostname.toLowerCase() === "opensource.bzcreators.com.ar";
 
 const AppRoutes = () => isOpenSourceHost ? (
   <Routes>
+    {legalPages.map(page => <Route key={page.path} path={page.path} element={<LegalPage />} />)}
     <Route path="*" element={<OpenSource />} />
   </Routes>
 ) : (
   <Routes>
+    {legalPages.map(page => <Route key={page.path} path={page.path} element={<LegalPage />} />)}
     <Route path="/" element={<Index />} />
     <Route path="/blog" element={<BlogList />} />
     <Route path="/blog/:slug" element={<BlogPost />} />
@@ -41,6 +48,8 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Suspense fallback={<main className="lab-shell py-32" role="status">Cargando el laboratorio…</main>}><AppRoutes /></Suspense>
+        <CookieConsent />
+        <AdminFooter />
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

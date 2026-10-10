@@ -1,4 +1,6 @@
 import fs from "node:fs";
+import { legalPages, LEGAL_UPDATED } from "../shared/legal-content.js";
+import { renderLegalPage } from "./legal-page.js";
 import path from "node:path";
 import { randomUUID } from "node:crypto";
 import bcrypt from "bcryptjs";
@@ -407,6 +409,7 @@ app.get("/sitemap.xml", async (_req, res) => {
     `<url><loc>${config.publicSiteUrl}</loc><changefreq>daily</changefreq><priority>1.0</priority></url>`,
     `<url><loc>${config.publicSiteUrl}/blog</loc><changefreq>daily</changefreq><priority>0.8</priority></url>`,
     `<url><loc>${config.openSourceSiteUrl}</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>`,
+    ...legalPages.map(page => `<url><loc>${config.publicSiteUrl}${page.path}</loc><lastmod>${LEGAL_UPDATED}</lastmod><changefreq>yearly</changefreq><priority>0.3</priority></url>`),
     ...posts.map((post) => {
       const date = new Date(post.last_modified).toISOString().slice(0, 10);
       return `<url><loc>${config.publicSiteUrl}/blog/${encodeURIComponent(post.slug)}</loc><lastmod>${date}</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>`;
@@ -423,6 +426,14 @@ app.use("/api", (_req, res) => res.status(404).json({ error: "Endpoint no encont
 
 const distDir = path.join(config.projectRoot, "dist");
 if (fs.existsSync(distDir)) {
+  for (const page of legalPages) {
+    app.get(page.path, async (_req, res, next) => {
+      try {
+        const template = await fs.promises.readFile(path.join(distDir, "index.html"), "utf8");
+        res.type("html").send(renderLegalPage(template, page, config.publicSiteUrl));
+      } catch (error) { next(error); }
+    });
+  }
   app.use(express.static(distDir, { index: false }));
   app.use((req, res, next) => {
     if (req.method !== "GET") return next();

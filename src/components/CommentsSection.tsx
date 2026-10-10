@@ -52,6 +52,8 @@ export default function CommentsSection({ postId }: CommentsSectionProps) {
   const [form, setForm] = useState({ name: "", email: "", content: "" });
   const [errors, setErrors] = useState<{ name?: string; email?: string; content?: string }>({});
   const [submitting, setSubmitting] = useState(false);
+  const [privacyAccepted, setPrivacyAccepted] = useState(false);
+  const [privacyError, setPrivacyError] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle");
 
   const fetchComments = useCallback(async () => {
@@ -85,6 +87,7 @@ export default function CommentsSection({ postId }: CommentsSectionProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!privacyAccepted) { setPrivacyError(true); return; }
     if (!validate()) return;
 
     setSubmitting(true);
@@ -100,6 +103,7 @@ export default function CommentsSection({ postId }: CommentsSectionProps) {
       setSubmitStatus("success");
       setForm({ name: "", email: "", content: "" });
       setErrors({});
+      setPrivacyAccepted(false);
       setTimeout(() => setSubmitStatus("idle"), 5000);
     } catch {
       setSubmitStatus("error");
@@ -205,7 +209,8 @@ export default function CommentsSection({ postId }: CommentsSectionProps) {
             </div>
           </div>
 
-          <div className="flex items-center justify-between">
+          <div className="comment-privacy"><label><input type="checkbox" checked={privacyAccepted} onChange={e => { setPrivacyAccepted(e.target.checked); setPrivacyError(false); }} aria-describedby="comment-data-notice" required />Autorizo el uso de mis datos para publicar y gestionar este comentario.</label><p id="comment-data-notice">Tu nombre, comentario y fecha serán públicos; guardamos tu correo sin publicarlo. No se usa para publicidad. Consultá <a href="/privacidad">Privacidad</a>, <a href="/terminos">Términos</a> y <a href="/eliminacion-de-datos">cómo eliminar tus datos</a>.</p>{privacyError && <p role="alert">Necesitamos tu autorización para publicar el comentario.</p>}</div>
+          <div className="flex flex-wrap gap-4 items-center justify-between">
             <p className="text-[hsl(0_0%_40%)] text-xs">
               Tu correo no será visible públicamente.
             </p>
