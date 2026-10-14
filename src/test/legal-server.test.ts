@@ -4,7 +4,7 @@ import os from "node:os";
 import path from "node:path";
 import type { AddressInfo } from "node:net";
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
-import { legalPages } from "../../shared/legal-content.js";
+import { LEGAL_UPDATED, legalPages } from "../../shared/legal-content.js";
 const fixture = vi.hoisted(() => ({ root: "", query: vi.fn(async () => [[]]), execute: vi.fn(async () => [[]]) }));
 vi.mock("../../server/db.js", () => ({ pool: { query: fixture.query, execute: fixture.execute } }));
 vi.mock("../../server/config.js", () => ({ config: { projectRoot: fixture.root, uploadDir: path.join(fixture.root, "uploads"), publicSiteUrl: "https://bzcreators.com.ar", openSourceSiteUrl: "https://opensource.bzcreators.com.ar", jwtSecret: "x".repeat(40), maxUploadBytes: 5 * 1024 * 1024 } }));
@@ -38,6 +38,6 @@ describe("páginas legales públicas en Express", () => {
     const response = await fetch(base + "/sitemap.xml");
     expect(response.status).toBe(200);
     const xml = await response.text();
-    for (const page of legalPages) expect(xml).toContain(`<loc>https://bzcreators.com.ar${page.path}</loc><lastmod>2026-10-10</lastmod>`);
+    for (const page of legalPages) expect(xml).toContain(`<loc>https://bzcreators.com.ar${page.path}</loc><lastmod>${LEGAL_UPDATED}</lastmod>`);
   });
 });

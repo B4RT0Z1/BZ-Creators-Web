@@ -1,6 +1,6 @@
 # Textos legales para revisión
 
-Actualización: 2026-10-10. Borrador local; no publicado.
+Actualización: 2026-10-13. Borrador local; no publicado.
 
 Fuente única: shared/legal-content.js. Para regenerar: node scripts/export-legal-review.mjs.
 
@@ -8,7 +8,7 @@ Fuente única: shared/legal-content.js. Para regenerar: node scripts/export-lega
 
 URL prevista: https://bzcreators.com.ar/privacidad
 
-Descripción SEO: Cómo BZ Creators trata los datos de comentarios, administración y análisis de Instagram, y cómo ejercer tus derechos.
+Descripción SEO: Cómo BZ Creators trata los datos de comentarios, administración, análisis y atención por Instagram, y cómo ejercer tus derechos.
 
 Qué información usamos, para qué la necesitamos y cómo podés decidir sobre tus datos.
 
@@ -24,7 +24,7 @@ BZ Creators es el nombre comercial de **BAUTISTA ZANELLI**, CUIT 20-43456073-0. 
 - **Visitas y seguridad:** las solicitudes incluyen IP y datos técnicos del navegador. Los límites de inicio de sesión y comentarios usan la IP temporalmente en memoria (ventanas de 15 y 10 minutos). Se registran errores del servidor; estos pueden contener detalles de una operación fallida. Cloudflare y el hosting pueden tratar datos técnicos para entregar y proteger el sitio.
 - **Contacto:** el contacto público abre WhatsApp con un mensaje que podés editar. No hay un formulario público de consultas que guarde datos en nuestra base ni una suscripción a newsletter. Al enviarnos un mensaje o correo tratamos lo que nos compartís para responder.
 
-No hay registro de visitantes ni pagos en este sitio. La integración de Instagram se usa para análisis y es distinta del acceso al panel del sitio.
+No hay registro de visitantes ni pagos en este sitio. La integración de Instagram puede usarse para análisis y atención de consultas, y es distinta del acceso al panel del sitio.
 
 ### Para qué y con qué base los usamos
 
@@ -32,20 +32,24 @@ Usamos los comentarios para publicar y gestionar la conversación; el correo per
 
 Las consultas se atienden a pedido de la persona; los datos de administradores y la sesión permiten operar el servicio autorizado. La seguridad, la prevención de abusos y el diagnóstico técnico sostienen el funcionamiento del sitio. Cumplimos las obligaciones legales aplicables. Si resulta aplicable el RGPD, el tratamiento se apoya, según el caso, en consentimiento, medidas precontractuales o contrato, obligación legal e interés legítimo en seguridad, evaluando los derechos de las personas. La disponibilidad pública de un dato no elimina esos derechos.
 
-### Análisis mediante Instagram / Meta
+### Instagram / Meta: análisis y atención
 
-La app de BZ Creators utiliza la API de Instagram/Meta en modo de lectura: consulta métricas de la cuenta propia **@bautyzanelli** y datos públicos de cuentas profesionales que se incluyan en el análisis, dentro de los permisos y límites de Meta. La finalidad es comprender contenidos y comparar desempeño para la planificación editorial.
+BZ Creators utiliza la API oficial de Instagram/Meta para consultar métricas de su cuenta profesional **@bautyzanelli** y datos públicos de cuentas profesionales incluidas en el análisis, dentro de los permisos y límites de Meta. Su finalidad es comprender contenidos, comparar desempeño y preparar guiones y propuestas. Consulta los datos de perfil, publicaciones y métricas disponibles de alcance, vistas, guardados, compartidos, interacciones y tiempo de reproducción; no todas las métricas están disponibles para todos los formatos.
 
-Consulta identificador, usuario, nombre, biografía y conteos del perfil propio; identificador, texto, formato, enlace, fecha, likes y cantidad de comentarios de publicaciones. Para la cuenta propia solicita las métricas disponibles de alcance, vistas, guardados, compartidos, interacciones, visitas al perfil y tiempo de reproducción de Reels; no todas están disponibles para todos los formatos. De cuentas profesionales públicas consulta usuario, seguidores, cantidad de publicaciones y los textos, enlaces, fechas, formatos y conteos públicos de sus publicaciones. No descarga el texto de comentarios de Instagram, mensajes privados ni listas nominales de seguidores. El histórico de métricas, publicaciones, cuentas observadas e informes se guarda en SQLite en el host de BZ Agent OS, separado del MySQL del sitio. Las credenciales de conexión se guardan en el almacén de secretos del host. Los permisos requeridos por el flujo actual son instagram_basic, instagram_manage_insights, pages_show_list, pages_read_engagement y business_management; no se solicitan permisos de publicación o mensajería. No publica contenidos, no envía mensajes, no vende datos ni los usa para publicidad. No convierte a quien visita este sitio en usuario autenticado de Meta ni envía sus comentarios del blog a Meta por esta integración.
+Cuando se habilita la atención de Instagram, recibe los mensajes directos y comentarios dirigidos a la cuenta, genera respuestas mediante un asistente de IA, orienta sobre servicios y puede entregar recursos que la persona solicita mediante campañas de una publicación. El asistente se identifica como IA y deriva a Bautista las consultas que requieren una persona. La interacción no confirma por sí sola una reunión reservada, una compra o un pago.
 
-La autorización de la cuenta propia se gestiona con Meta; los datos de otras cuentas se limitan a información profesional pública permitida por su API. Podés solicitar acceso, rectificación o eliminación de los datos que conservemos mediante las [instrucciones de eliminación](/eliminacion-de-datos). Revocar una conexión evita futuras consultas autorizadas, pero no sustituye el pedido de borrar copias que ya tengamos.
+Para atender se tratan los identificadores de cuenta, contacto, mensaje, comentario y publicación, los textos de la consulta y las respuestas y sus fechas. Se conserva el hilo para atender la solicitud y evitar repetir preguntas o enviar respuestas duplicadas. No se solicitan contraseñas, datos de tarjetas ni información sensible. Comentar una palabra de campaña permite entregar el recurso solicitado; no autoriza mensajes comerciales indiscriminados ni contactos fuera de las condiciones de Meta. Podés pedir atención humana o dejar de recibir respuestas automáticas.
+
+Los registros de análisis y atención se guardan en SQLite en el host de BZ Agent OS, separado del MySQL del sitio. Las credenciales de conexión se guardan cifradas en el almacén de secretos y no se envían al modelo de IA. La finalidad y el alcance dependen de las funciones habilitadas: los permisos de mensajes y comentarios permiten atención, pero tener un permiso de publicación no implica que se publiquen contenidos automáticamente. No vendemos los datos de las consultas ni convertimos a quien visita este sitio en usuario autenticado de Meta; los comentarios del blog no se envían a Meta por esta integración.
+
+Podés solicitar acceso, rectificación o eliminación mediante las [instrucciones de eliminación](/eliminacion-de-datos). Revocar la conexión impide nuevas consultas autorizadas pero no sustituye el pedido de borrar copias ya conservadas. Las consultas y decisiones comerciales que necesitan intervención se revisan por el responsable.
 
 ### Proveedores, destinatarios y transferencias
 
 - **Contabo:** alojamiento del servidor y de la base de datos MySQL en la Unión Europea, según la ubicación indicada por el responsable. La región declarada para este alojamiento es la UE.
 - **Cloudflare:** el sitio pasa por su infraestructura de entrega y protección; puede recibir IP, URL solicitada y datos técnicos. Su red global puede procesar solicitudes fuera de Argentina y de la UE, conforme a las condiciones del proveedor.
-- **Meta:** proveedor de Instagram/Facebook para la integración de análisis y de WhatsApp si elegís contactarnos por ese medio. Estos servicios también tienen sus propias políticas.
-- **OpenRouter y DeepSeek:** el agente de Instagram envía un resumen de métricas, fragmentos de textos públicos y cuentas analizadas para generar informes mediante el modelo DeepSeek configurado. El código no envía el token de Meta en ese resumen. Si se cambia el proveedor o la finalidad, corresponde revisar esta política y los permisos aplicables.
+- **Meta:** proveedor de Instagram/Facebook para la integración de análisis y atención y de WhatsApp si elegís contactarnos por ese medio. Estos servicios también tienen sus propias políticas.
+- **OpenRouter y DeepSeek:** el agente de contenido envía un resumen de métricas, fragmentos de textos públicos y cuentas analizadas para generar informes. Cuando se habilita el asistente de atención, se envían los textos necesarios de la consulta y del hilo, junto con el contexto e indicaciones del servicio, para generar la respuesta. Se utiliza el proveedor del modelo configurado; inicialmente, DeepSeek V4 Flash. El código no envía el token de Meta al modelo. Si se cambia el proveedor o la finalidad, corresponde revisar esta política y los permisos aplicables.
 - **Telegram:** si se configura el envío, recibe los informes y el identificador del chat elegido por el titular para entregárselos. Esto no autoriza a escribir a otras personas por Instagram.
 - **Contenido externo:** las notas y proyectos pueden mostrar imágenes alojadas en otros dominios. Al cargarlas, su proveedor recibe una solicitud técnica. Los enlaces a GitHub, productos y noticias llevan a sitios independientes; no se cargan sus páginas o embeds por el solo hecho de mostrar el enlace.
 
@@ -57,7 +61,7 @@ La cookie de administración tiene una duración máxima de 12 horas; el cierre 
 
 Los comentarios no tienen una eliminación automática por antigüedad en el código: permanecen hasta su eliminación manual, una solicitud procedente o la eliminación de la nota, que borra sus comentarios asociados. Los comentarios se conservan hasta que su autor solicite el borrado, se retiren por moderación o se elimine la nota. Las consultas de contacto se conservan hasta 6 meses desde la última interacción, salvo una obligación legal o relación contractual que justifique una conservación diferente. Las cuentas de administración permanecen mientras se necesiten; las imágenes se conservan mientras sigan asociadas al contenido, y el sistema elimina la imagen local al reemplazarla o borrar su publicación.
 
-El responsable definió un máximo de **6 meses para logs, copias de seguridad y datos obtenidos de Instagram/Meta**, salvo una obligación legal o un reclamo que justifique conservar un conjunto limitado por más tiempo. La conservación del servidor y sus copias de seguridad se gestiona fuera de la aplicación del sitio, bajo responsabilidad del titular. La revisión del vencimiento y la atención de solicitudes de eliminación incluyen los registros y reportes de la integración de Meta; el sitio no ofrece un botón de borrado automático para esa integración. Los datos eliminados de los sistemas activos pueden permanecer en backups hasta su vencimiento; no deben reutilizarse y, si se restaura una copia, debe repetirse la eliminación.
+Los eventos de atención de Instagram se conservan como máximo 180 días desde su recepción; los hilos operativos, hasta 180 días desde su última actividad. El historial se limita además a los últimos 30 mensajes. El responsable definió un máximo de **6 meses para logs, copias de seguridad y datos obtenidos de Instagram/Meta**, salvo una obligación legal o un reclamo que justifique conservar un conjunto limitado por más tiempo. La conservación del servidor y sus copias de seguridad se gestiona fuera de la aplicación del sitio, bajo responsabilidad del titular. La revisión del vencimiento y la atención de solicitudes de eliminación incluyen los registros y reportes de la integración de Meta; el sitio no ofrece un botón de borrado automático para esa integración. Los datos eliminados de los sistemas activos pueden permanecer en backups hasta su vencimiento; no deben reutilizarse y, si se restaura una copia, debe repetirse la eliminación.
 
 Los cambios en proveedores o finalidades requieren revisar la información y, cuando corresponda, solicitar un nuevo consentimiento.
 
@@ -95,7 +99,7 @@ Este trámite no elimina tu cuenta de Facebook/Instagram, tus publicaciones en M
 
 ### 3. Qué eliminamos y qué puede quedar
 
-Después de verificar el pedido, eliminamos los comentarios identificados —nombre, correo, texto y registro asociado— y los datos personales de la integración de Facebook/Instagram que estén bajo nuestro control, incluidas copias activas de métricas o reportes vinculables a tu cuenta. Si corresponde una conexión autorizada, retiramos sus credenciales almacenadas e impedimos su reutilización. Los datos estadísticos irreversiblemente anónimos no permiten identificarte.
+Después de verificar el pedido, eliminamos los comentarios identificados —nombre, correo, texto y registro asociado— y los datos personales de la integración de Facebook/Instagram que estén bajo nuestro control, incluidas copias activas de métricas o reportes vinculables a tu cuenta, mensajes, respuestas, identificadores y derivaciones de atención. Si tu pedido se refiere a una conversación de Instagram, indicá tu usuario y una fecha aproximada para localizarla; no envíes tu contraseña ni un token de acceso. Si corresponde una conexión autorizada, retiramos sus credenciales almacenadas e impedimos su reutilización. Los datos estadísticos irreversiblemente anónimos no permiten identificarte.
 
 Las copias de seguridad tienen un máximo definido de 6 meses y quedan fuera del uso habitual hasta su vencimiento; si se restauran, debe reaplicarse la eliminación. La solicitud se atiende con intervención del responsable e incluye las copias activas y los reportes identificables de la integración. Al confirmar la eliminación, informamos si queda alguna copia de seguridad pendiente de vencer. Si una obligación legal o un reclamo exige conservar algo, te explicamos qué dato, por qué y por cuánto tiempo, restringiendo su uso. No podemos borrar copias realizadas por terceros fuera de nuestro control.
 
