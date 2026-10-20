@@ -11,6 +11,7 @@ type Post = { id: string; title: string; slug: string; content: string; publishe
 function fakePool() {
   const posts: Post[] = [];
   const drafts: Array<{ post_id: string; source_url: string }> = [];
+  let beforePublish: ((post:Post)=>void)|undefined;
   const pool = {
     async query() { return [posts.map((p) => ({ ...p, source_url: drafts.find((d) => d.post_id === p.id)?.source_url ?? null }))]; },
     async execute(sql: string, params: unknown[]) {
@@ -21,6 +22,7 @@ function fakePool() {
         return [{}];
       }
       if (sql.startsWith("INSERT INTO agent_drafts")) { drafts.push({ post_id: params[0] as string, source_url: params[1] as string }); return [{}]; }
+      if(sql.startsWith('UPDATE posts p JOIN')&&sql.includes('SET p.published = TRUE')){const post=posts.find(p=>p.id===params[0]);if(post&&beforePublish)beforePublish(post);const fields=['title','content','image_url','meta_description','keywords'] as const;const matches=post&&!post.published&&drafts.some(d=>d.post_id===post.id)&&fields.every((field,i)=>(post[field]??null)===(params[i+1]??null));if(matches)post.published=true;return[{affectedRows:matches?1:0}];}
       if (sql.startsWith("UPDATE posts p JOIN")) { const post = posts.find(p => p.id === params[5])!; Object.assign(post, { title: params[0], content: params[1], image_url: params[2], meta_description: params[3], keywords: params[4] }); return [{ affectedRows: 1 }]; }
       if (sql.startsWith("DELETE p FROM")) { const index = posts.findIndex(p => p.id === params[0]); posts.splice(index,1); drafts.splice(drafts.findIndex(d => d.post_id === params[0]),1); return [{ affectedRows: 1 }]; }
       if (sql.includes("JOIN agent_drafts")) return [posts.filter((p) => p.id === params[0] && drafts.some((d) => d.post_id === p.id)).map((p) => ({ ...p }))];
@@ -30,7 +32,7 @@ function fakePool() {
       throw new Error(`consulta inesperada: ${sql}`);
     },
   };
-  return { pool, posts, drafts };
+  return { pool, posts, drafts, beforePublication(fn:(post:Post)=>void){beforePublish=fn;} };
 }
 
 const servers: Array<{ close(): void }> = [];
@@ -52,6 +54,7 @@ async function start(tokens = { write: WRITE, publish: PUBLISH }) {
 const note = { title: "Nueva ley de apuestas en línea", content: "<h2>Qué cambia</h2><p>Texto propio.</p><h2>Qué implica</h2><p>Explicación.</p><script>alert(1)</script>", image_url: "https://images.example.com/news.jpg", source_url: "https://example.com/nota-1", meta_description: "Resumen" };
 
 describe("API del agente de noticias", () => {
+  it('authorizes publication of the exact reviewed revision and rejects concurrent changes',async()=>{const t=await start();expect((await t.call('/capabilities',WRITE)).status).toBe(401);expect((await t.call('/capabilities',PUBLISH)).status).toBe(200);const id=(await t.call('/posts',WRITE,note)).json.post.id;const current=(await t.call('/posts/'+id,PUBLISH)).json.post as typeof note&{revision:string};expect((await t.call('/posts/'+id+'/publish',PUBLISH,{expectedRevision:'stale'})).status).toBe(409);expect(t.posts[0].published).toBe(false);t.beforePublication(post=>{post.title+=' modificado';});expect((await t.call('/posts/'+id+'/publish',PUBLISH,{expectedRevision:current.revision})).status).toBe(409);expect(t.posts[0].published).toBe(false);t.beforePublication(()=>{});const reread=(await t.call('/posts/'+id,PUBLISH)).json.post as typeof current;const published=await t.call('/posts/'+id+'/publish',PUBLISH,{expectedRevision:reread.revision});expect(published.status).toBe(200);expect(published.json.post).toMatchObject({reviewedRevision:reread.revision,published:true});});
   it("rechaza sin credencial o con una incorrecta, y queda apagada sin token válido", async () => {
     const t = await start();
     expect((await t.call("/posts", null)).status).toBe(401);

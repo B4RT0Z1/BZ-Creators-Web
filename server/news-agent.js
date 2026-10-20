@@ -37,6 +37,7 @@ export function createNewsAgentRouter({ pool, tokens }) {
   router.use(rateLimit({ windowMs: 60 * 60 * 1000, limit: 120, standardHeaders: true, legacyHeaders: false, message: { error: "Demasiadas solicitudes del agente" } }));
   const write = requireToken(tokens?.write ?? "");
   const approve = requireToken(tokens?.publish ?? "");
+  router.get('/capabilities', approve, (_req, res) => res.json({ revisionBoundPublish: true }));
 
   // Lo ya cargado (borradores incluidos), para que el agente no repita notas.
   router.get("/posts", write, async (_req, res) => {
@@ -131,9 +132,12 @@ export function createNewsAgentRouter({ pool, tokens }) {
       const draft = await ownDraft(req.params.id);
       if (!draft) return res.status(404).json({ error: "No existe ese borrador del agente" });
       if (draft.published) return res.status(409).json({ error: "Ya estaba publicada" });
+      const reviewedRevision = articleRevision(draft);
+      if (req.body?.expectedRevision !== undefined && req.body.expectedRevision !== reviewedRevision) return res.status(409).json({ error: 'La nota cambió después de revisarla: requiere una nueva autorización' });
       try { editorialFields(draft); } catch (error) { return res.status(400).json({ error: "Antes de publicar: " + error.message }); }
-      await pool.execute("UPDATE posts SET published = TRUE WHERE id = ?", [draft.id]);
-      return res.json({ post: { id: draft.id, slug: draft.slug, published: true } });
+      const [changed] = await pool.execute('UPDATE posts p JOIN agent_drafts d ON d.post_id = p.id SET p.published = TRUE WHERE p.id = ? AND BINARY p.title <=> BINARY ? AND BINARY p.content <=> BINARY ? AND BINARY p.image_url <=> BINARY ? AND BINARY p.meta_description <=> BINARY ? AND BINARY p.keywords <=> BINARY ? AND p.published = FALSE', [draft.id, draft.title, draft.content, draft.image_url, draft.meta_description, draft.keywords]);
+      if (changed.affectedRows !== 1) return res.status(409).json({ error: 'La nota cambió durante la autorización: volvé a revisarla' });
+      return res.json({ post: { id: draft.id, slug: draft.slug, published: true, reviewedRevision } });
     } catch (error) {
       console.error(error);
       return res.status(500).json({ error: "Error interno del servidor" });
