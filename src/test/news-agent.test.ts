@@ -46,7 +46,7 @@ async function start(tokens = { write: WRITE, publish: PUBLISH }) {
   const base = `http://127.0.0.1:${(server.address() as AddressInfo).port}/api/agent`;
   const call = async (path: string, token: string | null, body?: unknown) => {
     const response = await fetch(base + path, { method: body === undefined ? "GET" : "POST", headers: { "content-type": "application/json", ...(token ? { authorization: `Bearer ${token}` } : {}) }, ...(body === undefined ? {} : { body: JSON.stringify(body) }) });
-    return { status: response.status, json: await response.json() as { post: { id: string; slug: string; published: boolean }; posts: Array<{ source_url: string }> } };
+    return { status: response.status, json: await response.json() as { post: Post & { revision: string; reviewedRevision?: string; source_url?: string }; posts: Array<{ source_url: string }> } };
   };
   return { ...db, call };
 }
