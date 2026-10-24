@@ -42,7 +42,7 @@ const commentLimiter = rateLimit({
 
 const postSelect = `
   SELECT id, title, slug, content, image_url, category_id, published,
-         meta_description, keywords, created_at, updated_at,
+         meta_description, keywords, created_at, updated_at, published_at,
          EXISTS (SELECT 1 FROM agent_drafts d WHERE d.post_id = posts.id) AS agent_created
   FROM posts
 `;
@@ -113,7 +113,7 @@ app.get("/api/auth/me", requireAdmin, (req, res) => {
 
 app.get("/api/posts", async (_req, res) => {
   try {
-    const [rows] = await pool.query(`${postSelect} WHERE published = TRUE ORDER BY created_at DESC`);
+    const [rows] = await pool.query(`${postSelect} WHERE published = TRUE ORDER BY COALESCE(published_at, created_at) DESC, created_at DESC`);
     res.json({ posts: rows.map(mapPost) });
   } catch (error) {
     sendDatabaseError(res, error);
@@ -164,8 +164,8 @@ app.post("/api/admin/posts", requireAdmin, handleUpload, async (req, res) => {
   try {
     await pool.execute(
       `INSERT INTO posts
-       (id, title, slug, content, image_url, category_id, published, meta_description, keywords)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+       (id, title, slug, content, image_url, category_id, published, meta_description, keywords, published_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, IF(? = TRUE, CURRENT_TIMESTAMP(3), NULL))`,
       [
         id,
         title,
@@ -176,6 +176,7 @@ app.post("/api/admin/posts", requireAdmin, handleUpload, async (req, res) => {
         parsePublished(req.body.published),
         cleanText(req.body.meta_description, 320) || null,
         cleanText(req.body.keywords, 500) || null,
+        parsePublished(req.body.published),
       ],
     );
     const [rows] = await pool.execute(`${postSelect} WHERE id = ? LIMIT 1`, [id]);
@@ -207,8 +208,9 @@ app.put("/api/admin/posts/:id", requireAdmin, handleUpload, async (req, res) => 
   try {
     await pool.execute(
       `UPDATE posts
-       SET title = ?, slug = ?, content = ?, image_url = ?, category_id = ?, published = ?,
-           meta_description = ?, keywords = ?
+       SET title = ?, slug = ?, content = ?, image_url = ?, category_id = ?,
+           published_at = IF(? = TRUE AND published = FALSE, COALESCE(published_at, CURRENT_TIMESTAMP(3)), published_at),
+           published = ?, meta_description = ?, keywords = ?
        WHERE id = ?`,
       [
         title,
@@ -216,6 +218,7 @@ app.put("/api/admin/posts/:id", requireAdmin, handleUpload, async (req, res) => 
         content,
         imageUrl,
         req.body.category_id || "00000000-0000-4000-8000-000000000001",
+        parsePublished(req.body.published),
         parsePublished(req.body.published),
         cleanText(req.body.meta_description, 320) || null,
         cleanText(req.body.keywords, 500) || null,
@@ -406,7 +409,7 @@ app.post("/api/posts/:postId/comments", commentLimiter, async (req, res) => {
 
 app.get("/sitemap.xml", async (_req, res) => {
   const [posts] = await pool.query(
-    "SELECT slug, COALESCE(updated_at, created_at) AS last_modified FROM posts WHERE published = TRUE ORDER BY created_at DESC",
+    "SELECT slug, COALESCE(updated_at, created_at) AS last_modified FROM posts WHERE published = TRUE ORDER BY COALESCE(published_at, created_at) DESC, created_at DESC",
   );
   const urls = [
     `<url><loc>${config.publicSiteUrl}</loc><changefreq>daily</changefreq><priority>1.0</priority></url>`,

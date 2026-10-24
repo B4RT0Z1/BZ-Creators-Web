@@ -47,7 +47,7 @@ export default function BlogPost() {
             <h1 className="text-3xl md:text-5xl font-bold text-foreground mb-6 leading-tight">{post.title}</h1>
 
             <div className="flex items-center text-muted-foreground mb-8 pb-8 border-b border-border">
-              <span>Publicado el {new Date(post.created_at).toLocaleDateString()}</span>
+              <span>Publicado el {new Date(post.published_at || post.created_at).toLocaleDateString()}</span>
             </div>
 
             <ArticleCover key={post.image_url} image={post.image_url} title={post.title}/>

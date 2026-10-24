@@ -26,6 +26,7 @@ CREATE TABLE IF NOT EXISTS posts (
   image_url VARCHAR(2048) NULL,
   category_id CHAR(36) NULL,
   published BOOLEAN NOT NULL DEFAULT FALSE,
+  published_at DATETIME(3) NULL,
   meta_description VARCHAR(320) NULL,
   keywords VARCHAR(500) NULL,
   created_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),

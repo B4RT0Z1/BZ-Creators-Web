@@ -14,7 +14,7 @@ export function setArticleSeo(post: Post): () => void {
   meta("description", description); meta("author", post.author_name || "BZ Creators"); meta("keywords", post.keywords || "");
   meta("og:type", "article", true); meta("og:title", post.title, true); meta("og:description", description, true);
   meta("og:url", canonical, true); meta("og:site_name", "BZ Creators", true);
-  meta("article:published_time", new Date(post.created_at).toISOString(), true);
+  meta("article:published_time", new Date(post.published_at || post.created_at).toISOString(), true);
   meta("article:modified_time", new Date(post.updated_at || post.created_at).toISOString(), true);
   meta("twitter:card", image ? "summary_large_image" : "summary");
   meta("twitter:title", post.title); meta("twitter:description", description);
@@ -27,7 +27,7 @@ export function setArticleSeo(post: Post): () => void {
   if (!script) { script = document.createElement("script"); script.id = "bz-article-jsonld"; script.type = "application/ld+json"; document.head.append(script); }
   script.dataset.bzArticle = "true";
   script.textContent = JSON.stringify({ "@context": "https://schema.org", "@type": "BlogPosting", headline: post.title, description, mainEntityOfPage: canonical, url: canonical,
-    ...(image ? { image: [image] } : {}), datePublished: new Date(post.created_at).toISOString(), dateModified: new Date(post.updated_at || post.created_at).toISOString(),
+    ...(image ? { image: [image] } : {}), datePublished: new Date(post.published_at || post.created_at).toISOString(), dateModified: new Date(post.updated_at || post.created_at).toISOString(),
     author: { "@type": "Organization", name: post.author_name || "BZ Creators" }, publisher: { "@type": "Organization", name: "BZ Creators", url: location.origin }, inLanguage: "es-AR" });
   return () => { document.head.querySelectorAll('[data-bz-article="true"]').forEach(el => el.remove()); document.title = "BZ Creators"; };
 }

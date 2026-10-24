@@ -4,7 +4,7 @@ export function articleData(post, base) {
   const origin = base.replace(/\/$/, "");
   const url = origin + "/blog/" + encodeURIComponent(post.slug);
   const image = post.image_url ? new URL(post.image_url, origin).href : undefined;
-  return { "@context": "https://schema.org", "@type": "BlogPosting", headline: post.title, description: post.meta_description || post.content.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim().slice(0,160), datePublished: new Date(post.created_at).toISOString(), dateModified: new Date(post.updated_at || post.created_at).toISOString(), mainEntityOfPage: url, url, inLanguage: "es-AR", ...(image ? { image: [image] } : {}), author: { "@type": "Organization", name: post.author_name || "BZ Creators" }, publisher: { "@type": "Organization", name: "BZ Creators", url: origin } };
+  return { "@context": "https://schema.org", "@type": "BlogPosting", headline: post.title, description: post.meta_description || post.content.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim().slice(0,160), datePublished: new Date(post.published_at || post.created_at).toISOString(), dateModified: new Date(post.updated_at || post.created_at).toISOString(), mainEntityOfPage: url, url, inLanguage: "es-AR", ...(image ? { image: [image] } : {}), author: { "@type": "Organization", name: post.author_name || "BZ Creators" }, publisher: { "@type": "Organization", name: "BZ Creators", url: origin } };
 }
 export function renderArticlePage(template, post, base) {
   const data = articleData(post, base);

@@ -17,6 +17,9 @@ export const migrate = async () => {
   try {
     const schema = await fs.readFile(path.join(config.projectRoot, "server", "schema.sql"), "utf8");
     await connection.query(schema);
+    // CREATE TABLE IF NOT EXISTS does not add columns to an existing installation.
+    const [publicationColumns] = await connection.execute("SELECT COLUMN_NAME FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'posts' AND COLUMN_NAME = 'published_at'");
+    if (!publicationColumns.length) await connection.query("ALTER TABLE posts ADD COLUMN published_at DATETIME(3) NULL AFTER published");
 
     const [adminRows] = await connection.query("SELECT COUNT(*) AS total FROM users WHERE role = 'admin'");
     const adminCount = Number(adminRows[0].total);

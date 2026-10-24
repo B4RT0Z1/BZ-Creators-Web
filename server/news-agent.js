@@ -90,7 +90,7 @@ export function createNewsAgentRouter({ pool, tokens }) {
 
   const ownDraft = async (id) => {
     const [rows] = await pool.execute(
-      `SELECT p.id, p.slug, p.published, p.title, p.content, p.image_url, p.meta_description, p.keywords FROM posts p JOIN agent_drafts d ON d.post_id = p.id WHERE p.id = ? LIMIT 1`,
+      `SELECT p.id, p.slug, p.published, p.title, p.content, p.image_url, p.meta_description, p.keywords, p.published_at FROM posts p JOIN agent_drafts d ON d.post_id = p.id WHERE p.id = ? LIMIT 1`,
       [id],
     );
     return rows[0];
@@ -135,7 +135,7 @@ export function createNewsAgentRouter({ pool, tokens }) {
       const reviewedRevision = articleRevision(draft);
       if (req.body?.expectedRevision !== undefined && req.body.expectedRevision !== reviewedRevision) return res.status(409).json({ error: 'La nota cambió después de revisarla: requiere una nueva autorización' });
       try { editorialFields(draft); } catch (error) { return res.status(400).json({ error: "Antes de publicar: " + error.message }); }
-      const [changed] = await pool.execute('UPDATE posts p JOIN agent_drafts d ON d.post_id = p.id SET p.published = TRUE WHERE p.id = ? AND BINARY p.title <=> BINARY ? AND BINARY p.content <=> BINARY ? AND BINARY p.image_url <=> BINARY ? AND BINARY p.meta_description <=> BINARY ? AND BINARY p.keywords <=> BINARY ? AND p.published = FALSE', [draft.id, draft.title, draft.content, draft.image_url, draft.meta_description, draft.keywords]);
+      const [changed] = await pool.execute('UPDATE posts p JOIN agent_drafts d ON d.post_id = p.id SET p.published = TRUE, p.published_at = COALESCE(p.published_at, CURRENT_TIMESTAMP(3)) WHERE p.id = ? AND BINARY p.title <=> BINARY ? AND BINARY p.content <=> BINARY ? AND BINARY p.image_url <=> BINARY ? AND BINARY p.meta_description <=> BINARY ? AND BINARY p.keywords <=> BINARY ? AND p.published = FALSE', [draft.id, draft.title, draft.content, draft.image_url, draft.meta_description, draft.keywords]);
       if (changed.affectedRows !== 1) return res.status(409).json({ error: 'La nota cambió durante la autorización: volvé a revisarla' });
       return res.json({ post: { id: draft.id, slug: draft.slug, published: true, reviewedRevision } });
     } catch (error) {

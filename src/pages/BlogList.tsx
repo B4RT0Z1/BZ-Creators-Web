@@ -45,7 +45,7 @@ export default function BlogList() {
               <Link to={`/blog/${post.slug}`} key={post.id} className="bg-card rounded-2xl shadow-sm hover:shadow-md transition-shadow overflow-hidden border border-border flex flex-col group">
                 <ArticleCover key={post.image_url} image={post.image_url} title={post.title}/>
                 <div className="p-6 flex-1 flex flex-col">
-                  <span className="text-sm text-violet-400 font-medium mb-2">{new Date(post.created_at).toLocaleDateString()}</span>
+                  <span className="text-sm text-violet-400 font-medium mb-2">{new Date(post.published_at || post.created_at).toLocaleDateString()}</span>
                   <h2 className="text-xl font-bold text-foreground mb-2 group-hover:text-violet-400 transition-colors line-clamp-2">{post.title}</h2>
                   <p className="text-muted-foreground line-clamp-3">{textExcerpt(post.content)}</p>
                 </div>

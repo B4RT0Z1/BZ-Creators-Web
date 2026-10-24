@@ -13,6 +13,7 @@ export interface Post {
   keywords: string | null;
   created_at: string;
   updated_at: string;
+  published_at?: string | null;
 }
 
 export interface Comment {
