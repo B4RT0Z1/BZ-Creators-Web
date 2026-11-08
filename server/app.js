@@ -432,6 +432,8 @@ app.use("/api", (_req, res) => res.status(404).json({ error: "Endpoint no encont
 
 const distDir = path.join(config.projectRoot, "dist");
 if (fs.existsSync(distDir)) {
+  app.get(/^\/pizarra-cap01$/, (_req, res) => res.redirect(301, "/pizarra-cap01/"));
+  app.use("/pizarra-cap01", express.static(path.join(distDir, "pizarra-cap01")));
   for (const page of legalPages) {
     app.get(page.path, async (_req, res, next) => {
       try {
