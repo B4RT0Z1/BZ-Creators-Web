@@ -1,0 +1,5 @@
+Logos de la pizarra (descargados 2026-11-06)
+- Simple Icons (datos CC0; las marcas son de sus duenos): simple-icons@16.36.0 via cdn.jsdelivr.net -> claude, github, git, nodedotjs, html5, css, javascript
+- openai.svg: simple-icons@15.22.0 (ya no esta en v16)
+- vscode.svg: paquete oficial code.visualstudio.com/assets/branding/visual-studio-code-icons.zip (marca de Microsoft, ver code.visualstudio.com/brand)
+- 2026-11-07, con OK de Bautista: simple-icons@16.36.0 via cdn.jsdelivr.net (datos CC0; las marcas son de sus dueños) -> anthropic, bitbucket, cloudflarepages, contabo, cursor, digitalocean, firebase, firefoxbrowser, githubactions, githubcopilot, githubpages, gitlab, googlechrome, googlegemini, googlemaps, hostinger, huggingface, mariadb, mercadopago, meta, mongodb, mysql, netlify, ollama, php, postgresql, python, railway, react, render, sqlite, supabase, tailwindcss, typescript, vercel, whatsapp, zedindustries. Colores de marca tomados del indice data/simple-icons.json de esa version; los casi negros se pintan en blanco para verse sobre fondo oscuro.

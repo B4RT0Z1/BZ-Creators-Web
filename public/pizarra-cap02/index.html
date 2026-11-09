@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Capítulo 2 · Instalá todo y armá tu primera pantalla · BZ Creators</title>
+<meta name="description" content="Pizarra interactiva del curso Programar con IA desde cero: hacé clic en cada tarjeta para ver enlaces y más información.">
+<link rel="icon" href="assets/bz-logo.png">
+<link rel="stylesheet" href="app/styles.css">
+<style>#modeSeg,#toHome,#saveState,[data-act="notes"]{display:none!important}#title{pointer-events:none}</style>
+<script src="datos.js"></script>
+</head>
+<body>
+
+<!-- Pantalla de proyectos -->
+<section id="home" hidden>
+  <header class="h-top">
+    <div class="h-brand"><img src="assets/bz-logo.png" alt=""><div><b>Pizarras BZ</b></div></div>
+    <button class="btn primary" id="newBoard"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Nueva pizarra</button>
+  </header>
+  <div class="h-grid" id="grid"></div>
+  <p class="h-empty" id="empty" hidden>Todavía no hay pizarras. Creá la primera con <b>Nueva pizarra</b>.</p>
+</section>
+
+<!-- Pizarra -->
+<section id="board" hidden>
+  <div id="view">
+    <div id="grid-bg"></div>
+    <div id="world">
+      <div id="frames"></div>
+      <div id="els"></div>
+      <svg class="layer" id="links"></svg>
+      <svg class="layer" id="ink"></svg>
+      <svg class="layer" id="sink"></svg>
+      <div id="stexts"></div>
+      <div id="sel"></div>
+    </div>
+    <div id="marquee"></div>
+    <svg id="rubber"><path/></svg>
+  </div>
+
+  <div id="cover"><div class="k"></div><h1></h1><p></p></div>
+  <div id="overlay"><h2></h2><div class="logos"></div><div class="names"></div></div>
+  <div id="brand"><img src="assets/bz-logo.png" alt=""><span>@bautyzanelli</span></div>
+  <div id="laser"></div>
+  <div id="card"></div>
+
+  <div class="ui" id="topbar">
+    <button class="ib" id="toHome" data-tip="Proyectos"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
+    <input id="title" spellcheck="false" aria-label="Nombre de la pizarra">
+    <div class="seg" id="modeSeg"><button data-mode="edit">Editar</button><button data-mode="present">Presentar</button></div>
+    <span id="saveState"></span>
+  </div>
+  <div class="ui" id="tools"></div>
+  <div class="ui" id="ctx"></div>
+  <div class="ui" id="picker"></div>
+  <div class="ui" id="steps"><button data-act="prev" data-tip="Anterior (←)"></button><div id="dots"></div><button data-act="next" data-tip="Siguiente (→ o espacio)"></button><span class="where" id="where"></span></div>
+  <aside class="ui" id="panel"><header><b>Pasos de la presentación</b><button class="ib" id="panelClose" data-tip="Cerrar"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></header><div id="stepList"></div><footer id="stepAdd"></footer></aside>
+  <div class="ui" id="mini"><div id="vp"></div></div>
+  <div class="ui" id="zoomlvl">100%</div>
+  <div id="hint"></div>
+</section>
+
+<div id="modal" hidden><form class="m-box" id="mForm"><h3 id="mTitle"></h3><p id="mText"></p><div id="mFields"></div><div class="m-btns"><button type="button" class="btn" id="mCancel">Cancelar</button><button type="submit" class="btn primary" id="mOk">Aceptar</button></div></form></div>
+<div id="toast"></div>
+<input type="file" id="filePick" accept="image/*,video/*" multiple hidden>
+
+<script type="module" src="app/app.js"></script>
+</body>
+</html>

@@ -434,6 +434,8 @@ const distDir = path.join(config.projectRoot, "dist");
 if (fs.existsSync(distDir)) {
   app.get(/^\/pizarra-cap01$/, (_req, res) => res.redirect(301, "/pizarra-cap01/"));
   app.use("/pizarra-cap01", express.static(path.join(distDir, "pizarra-cap01")));
+  app.get(/^\/pizarra-cap02$/, (_req, res) => res.redirect(301, "/pizarra-cap02/"));
+  app.use("/pizarra-cap02", express.static(path.join(distDir, "pizarra-cap02")));
   for (const page of legalPages) {
     app.get(page.path, async (_req, res, next) => {
       try {
