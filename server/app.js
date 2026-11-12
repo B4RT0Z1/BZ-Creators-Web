@@ -436,6 +436,8 @@ if (fs.existsSync(distDir)) {
   app.use("/pizarra-cap01", express.static(path.join(distDir, "pizarra-cap01")));
   app.get(/^\/pizarra-cap02$/, (_req, res) => res.redirect(301, "/pizarra-cap02/"));
   app.use("/pizarra-cap02", express.static(path.join(distDir, "pizarra-cap02")));
+  app.get(/^\/prompts-fable-higgsfield$/, (_req, res) => res.redirect(301, "/prompts-fable-higgsfield/"));
+  app.use("/prompts-fable-higgsfield", express.static(path.join(distDir, "prompts-fable-higgsfield")));
   for (const page of legalPages) {
     app.get(page.path, async (_req, res, next) => {
       try {
